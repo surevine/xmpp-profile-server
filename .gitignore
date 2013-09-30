@@ -1,0 +1,14 @@
+.settings
+.DS_Store
+.project
+target
+.classpath
+target
+bin
+logs
+*.properties
+*.orig
+*.BACKUP.*
+*.BASE.*
+*.LOCAL.*
+*.REMOTE.*
