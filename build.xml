@@ -1,0 +1,13 @@
+<project name="XMPP Profile Server" default="server-start" basedir=".">
+<property name="jar" location="target/xmpp-profile-server.jar"/>
+<target name="server-stop">
+<exec executable="killall">
+<arg value="xmpp-profile-server"/>
+</exec>
+</target>
+<target name="server-start" depends="server-stop">
+<exec executable="java">
+<arg value="jar ${jar}"/>
+</exec>
+</target>
+</project>
