@@ -4,16 +4,17 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
-import com.surevine.profileserver.db.DefaultNodeStoreFactoryImpl;
-import com.surevine.profileserver.db.NodeStoreFactory;
-import com.surevine.profileserver.db.exception.NodeStoreException;
-import com.surevine.profileserver.queue.InQueueConsumer;
-import com.surevine.profileserver.queue.OutQueueConsumer;
 import org.xmpp.component.Component;
 import org.xmpp.component.ComponentException;
 import org.xmpp.component.ComponentManager;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.Packet;
+
+import com.surevine.profileserver.db.DefaultNodeStoreFactoryImpl;
+import com.surevine.profileserver.db.NodeStoreFactory;
+import com.surevine.profileserver.db.exception.NodeStoreException;
+import com.surevine.profileserver.queue.InQueueConsumer;
+import com.surevine.profileserver.queue.OutQueueConsumer;
 
 public class ProfileEngine implements Component {
 

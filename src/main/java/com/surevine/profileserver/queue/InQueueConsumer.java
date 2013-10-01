@@ -3,12 +3,14 @@ package com.surevine.profileserver.queue;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.xmpp.packet.IQ;
 import org.xmpp.packet.Packet;
 
 import com.surevine.profileserver.Configuration;
 import com.surevine.profileserver.db.NodeStore;
 import com.surevine.profileserver.db.NodeStoreFactory;
 import com.surevine.profileserver.db.exception.NodeStoreException;
+import com.surevine.profileserver.packetprocessor.iq.IQProcessor;
 
 public class InQueueConsumer extends QueueConsumer {
 
@@ -36,7 +38,12 @@ public class InQueueConsumer extends QueueConsumer {
 
 			String xml = p.toXML();
 			logger.debug("Received payload: '" + xml + "'.");
+			
 			nodeStore = nodeStoreFactory.create();
+			
+			if (p instanceof IQ) {
+				new IQProcessor(outQueue, conf, nodeStore).process((IQ) p);
+			}
 
 			logger.debug("Payload handled in '"
 					+ Long.toString((System.currentTimeMillis() - start))

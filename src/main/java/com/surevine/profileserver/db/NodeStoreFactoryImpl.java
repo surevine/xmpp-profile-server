@@ -9,14 +9,14 @@ import com.surevine.profileserver.db.exception.NodeStoreException;
 import com.surevine.profileserver.db.jdbc.JDBCNodeStore;
 import com.surevine.profileserver.db.jdbc.dialect.Sql92NodeStoreDialect;
 
-public class DefaultNodeStoreFactoryImpl implements NodeStoreFactory {
+public class NodeStoreFactoryImpl implements NodeStoreFactory {
 
 	private static final String CONFIGURATION_JDBC_DIALECT = "jdbc.dialect";
-	private static final Logger LOGGER = Logger.getLogger(DefaultNodeStoreFactoryImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(NodeStoreFactoryImpl.class);
 	
 	private final Properties configuration;
 
-	public DefaultNodeStoreFactoryImpl(final Properties configuration)
+	public NodeStoreFactoryImpl(final Properties configuration)
 			throws NodeStoreException {
 		this.configuration = configuration;
 
