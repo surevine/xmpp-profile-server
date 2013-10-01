@@ -29,12 +29,12 @@ public class GetTest extends IQTestHandler {
 		queue = new LinkedBlockingQueue<Packet>();
 
 		discoInfo = new Get(queue, nodeStore);
-
 		request = readStanzaAsIq("/disco-info/get");
 	}
 
 	@Test
-	public void testReturnsExpectedInfo() throws Exception {
+	public void testReturnsQueryElement() throws Exception {
+		
 		discoInfo.process(request);
 
 		Assert.assertEquals(1, queue.size());
@@ -49,14 +49,34 @@ public class GetTest extends IQTestHandler {
 		Assert.assertNotNull(query);
 		Assert.assertEquals(DiscoInfo.NAMESPACE_URI, query
 				.getNamespaceForPrefix("").getText());
+	}
 
+	@Test
+	public void testReturnsExceptedIdentity() throws Exception {
+		
+		discoInfo.process(request);
+
+		Assert.assertEquals(1, queue.size());
+		IQ result = (IQ) queue.poll();
+		Element query = result.getElement().element("query");
+		
 		Assert.assertEquals(1, query.elements("identity").size());
-		Assert.assertEquals(3, query.elements("feature").size());
 
 		Element identity = query.element("identity");
 		Assert.assertEquals("directory", identity.attributeValue("category"));
 		Assert.assertEquals("user profile", identity.attributeValue("type"));
+	}
 
+	@Test
+	public void testReturnsExceptedFeatures() throws Exception {
+		
+		discoInfo.process(request);
+
+		Assert.assertEquals(1, queue.size());
+		IQ result = (IQ) queue.poll();
+		Element query = result.getElement().element("query");
+		
+		Assert.assertEquals(3, query.elements("feature").size());
 		List<Element> features = query.elements("feature");
 		Assert.assertEquals(DiscoInfo.NAMESPACE_URI, features.get(0)
 				.attributeValue("var"));
