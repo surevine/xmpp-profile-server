@@ -14,6 +14,7 @@ import com.surevine.profileserver.Configuration;
 import com.surevine.profileserver.db.NodeStore;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
 import com.surevine.profileserver.packetprocessor.iq.namespace.discoinfo.DiscoInfo;
+import com.surevine.profileserver.packetprocessor.iq.namespace.vcard.VCard;
 
 public class IQProcessor implements PacketProcessor<IQ> {
 
@@ -26,8 +27,10 @@ public class IQProcessor implements PacketProcessor<IQ> {
 			NodeStore nodeStore) {
 		this.outQueue = outQueue;
 
-		processorsPerNamespace.put(DiscoInfo.NAMESPACE_URI,
-				new DiscoInfo(outQueue, conf, nodeStore));
+		processorsPerNamespace.put(VCard.NAMESPACE_URI, new VCard(outQueue,
+				conf, nodeStore));
+		processorsPerNamespace.put(DiscoInfo.NAMESPACE_URI, new DiscoInfo(
+				outQueue, conf, nodeStore));
 	}
 
 	@Override
@@ -36,7 +39,8 @@ public class IQProcessor implements PacketProcessor<IQ> {
 		try {
 			processPacket(packet);
 		} catch (Exception e) {
-			if (true == packet.getType().toString().equals("result")) return;
+			if (true == packet.getType().toString().equals("result"))
+				return;
 			IQ reply = IQ.createResultIQ(packet);
 			reply.setChildElement(packet.getChildElement().createCopy());
 			reply.setType(Type.error);
@@ -45,7 +49,7 @@ public class IQProcessor implements PacketProcessor<IQ> {
 					org.xmpp.packet.PacketError.Type.wait);
 			reply.setError(pe);
 			logger.error("Error while processing packet.", e);
-            e.printStackTrace();
+			e.printStackTrace();
 			this.outQueue.put(reply);
 		}
 	}
@@ -71,7 +75,8 @@ public class IQProcessor implements PacketProcessor<IQ> {
 
 		logger.debug("Couldn't find processor for packet");
 
-		if ((packet.getType() == IQ.Type.set) || (packet.getType() == IQ.Type.get)) {
+		if ((packet.getType() == IQ.Type.set)
+				|| (packet.getType() == IQ.Type.get)) {
 
 			IQ reply = IQ.createResultIQ(packet);
 			reply.setChildElement(packet.getChildElement().createCopy());
