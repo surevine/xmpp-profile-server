@@ -16,6 +16,11 @@ import org.xmpp.resultsetmanagement.ResultSet;
 public interface NodeStore {
 	
 	/**
+	 * Return whether a user has a record in the database
+	 */
+	boolean hasUser(JID user);
+	
+	/**
 	 * Closes this node store instance and releases any resources.
 	 */
 	void close() throws NodeStoreException;

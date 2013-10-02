@@ -14,6 +14,7 @@ import org.xmpp.packet.JID;
 import org.xmpp.packet.Packet;
 import org.xmpp.packet.PacketError;
 
+import com.surevine.profileserver.Configuration;
 import com.surevine.profileserver.db.NodeStore;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
 
@@ -54,10 +55,9 @@ public class Get implements PacketProcessor<IQ> {
 		query.addElement("feature").addAttribute("var",
 				"http://jabber.org/protocol/disco#info");
 		query.addElement("feature").addAttribute("var",
-				"urn:surevine:xmpp:profiles");
+				Configuration.NS_SUREVINE);
 		query.addElement("feature").addAttribute("var",
 				"urn:ietf:params:xml:ns:vcard-4.0");
-logger.info(result.toXML());
 		outQueue.put(result);
 	}
 }
