@@ -1,0 +1,3 @@
+<iq type='set' id='1'>
+  <query xmlns='jabber:iq:register'/>
+ </iq>
