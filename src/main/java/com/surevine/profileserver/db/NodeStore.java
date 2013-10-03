@@ -20,6 +20,13 @@ public interface NodeStore {
 	 */
 	boolean hasUser(JID user);
 	
+    /**
+     * Adds an owner to the system
+     * 
+     * @param JID jid
+     */
+	void addOwner(JID jid) throws NodeStoreException;
+	
 	/**
 	 * Closes this node store instance and releases any resources.
 	 */

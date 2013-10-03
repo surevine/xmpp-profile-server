@@ -53,6 +53,12 @@ public class JDBCNodeStore implements NodeStore {
 	}
 	
 	@Override
+	public void addOwner(JID jid) throws NodeStoreException {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
 	public Transaction beginTransaction() throws NodeStoreException {
 		if (transactionHasBeenRolledBack) {
 			throw new IllegalStateException(
@@ -175,5 +181,4 @@ public class JDBCNodeStore implements NodeStore {
 	public interface NodeStoreSQLDialect {
 
 	}
-
 }
