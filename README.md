@@ -25,4 +25,4 @@ See the database directory for SQL import files.
 * `mvn package`
 * Edit configuration files as required
 * Install database
-* `java -jar target/profileserver-<VERSION>-jar-with-dependencies.jar
+* `java -jar target/profileserver-%VERSION%-jar-with-dependencies.jar
