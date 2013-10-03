@@ -28,8 +28,8 @@ public abstract class NamespaceProcessorAbstract
     
 	public static Logger logger = Logger.getLogger(NamespaceProcessorAbstract.class);
 	
-    protected BlockingQueue<Packet> outQueue = null;
-    protected NodeStore        nodeStore = null;
+    protected BlockingQueue<Packet> outQueue;
+    protected NodeStore        nodeStore;
     protected Element          element;
     protected IQ               response;
     protected IQ               request;
