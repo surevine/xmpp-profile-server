@@ -9,6 +9,11 @@ Note this points to the main buddycloud repository for the java server.
 
 [![Build Status](https://travis-ci.org/surevine/xmpp-profile-server.png?branch=master)](https://travis-ci.org/surevine/xmpp-profile-server)
 
+## Discuss
+
+We have a MUC (Multi User Chat) room open to discuss this work. Please feel free to join us at 
+(https://github.com/surevine/xmpp-profile-server)[xmpp:https://github.com/surevine/xmpp-profile-server].
+
 ## Database install
 
 See the database directory for SQL import files.
