@@ -17,6 +17,7 @@ import org.xmpp.packet.PacketError;
 import com.surevine.profileserver.Configuration;
 import com.surevine.profileserver.db.NodeStore;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
+import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
 
 public class Get implements PacketProcessor<IQ> {
 
@@ -50,10 +51,12 @@ public class Get implements PacketProcessor<IQ> {
 	private void sendServerDiscoInfo() throws InterruptedException {
 
 		query.addElement("identity").addAttribute("category", "directory")
-				.addAttribute("type", "user profile");
+				.addAttribute("type", "user");
 
 		query.addElement("feature").addAttribute("var",
 				"http://jabber.org/protocol/disco#info");
+		query.addElement("feature").addAttribute("var",
+				Register.NAMESPACE_URI);
 		query.addElement("feature").addAttribute("var",
 				Configuration.NS_SUREVINE);
 		query.addElement("feature").addAttribute("var",

@@ -15,6 +15,7 @@ import org.xmpp.packet.Packet;
 import com.surevine.profileserver.Configuration;
 import com.surevine.profileserver.db.NodeStore;
 import com.surevine.profileserver.helpers.IQTestHandler;
+import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
 
 public class GetTest extends IQTestHandler {
 
@@ -65,7 +66,7 @@ public class GetTest extends IQTestHandler {
 
 		Element identity = query.element("identity");
 		Assert.assertEquals("directory", identity.attributeValue("category"));
-		Assert.assertEquals("user profile", identity.attributeValue("type"));
+		Assert.assertEquals("user", identity.attributeValue("type"));
 	}
 
 	@Test
@@ -77,13 +78,15 @@ public class GetTest extends IQTestHandler {
 		IQ result = (IQ) queue.poll();
 		Element query = result.getElement().element("query");
 		
-		Assert.assertEquals(3, query.elements("feature").size());
+		Assert.assertEquals(4, query.elements("feature").size());
 		List<Element> features = query.elements("feature");
 		Assert.assertEquals(DiscoInfo.NAMESPACE_URI, features.get(0)
 				.attributeValue("var"));
-		Assert.assertEquals(Configuration.NS_SUREVINE, features.get(1)
+		Assert.assertEquals(Register.NAMESPACE_URI, features.get(1)
 				.attributeValue("var"));
-		Assert.assertEquals("urn:ietf:params:xml:ns:vcard-4.0", features.get(2)
+		Assert.assertEquals(Configuration.NS_SUREVINE, features.get(2)
+				.attributeValue("var"));
+		Assert.assertEquals("urn:ietf:params:xml:ns:vcard-4.0", features.get(3)
 				.attributeValue("var"));
 
 	}
