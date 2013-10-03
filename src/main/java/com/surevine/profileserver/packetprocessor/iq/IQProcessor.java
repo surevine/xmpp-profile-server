@@ -14,6 +14,7 @@ import com.surevine.profileserver.Configuration;
 import com.surevine.profileserver.db.NodeStore;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
 import com.surevine.profileserver.packetprocessor.iq.namespace.discoinfo.DiscoInfo;
+import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
 import com.surevine.profileserver.packetprocessor.iq.namespace.vcard.VCard;
 
 public class IQProcessor implements PacketProcessor<IQ> {
@@ -23,14 +24,16 @@ public class IQProcessor implements PacketProcessor<IQ> {
 	private Map<String, PacketProcessor<IQ>> processorsPerNamespace = new HashMap<String, PacketProcessor<IQ>>();
 	private BlockingQueue<Packet> outQueue;
 
-	public IQProcessor(BlockingQueue<Packet> outQueue, Configuration conf,
-			NodeStore nodeStore) {
+	public IQProcessor(BlockingQueue<Packet> outQueue,
+			Configuration configuration, NodeStore nodeStore) {
 		this.outQueue = outQueue;
 
 		processorsPerNamespace.put(VCard.NAMESPACE_URI, new VCard(outQueue,
-				conf, nodeStore));
+				configuration, nodeStore));
 		processorsPerNamespace.put(DiscoInfo.NAMESPACE_URI, new DiscoInfo(
-				outQueue, conf, nodeStore));
+				outQueue, configuration, nodeStore));
+		processorsPerNamespace.put(Register.NAMESPACE_URI, new Register(
+				outQueue, configuration, nodeStore));
 	}
 
 	@Override
