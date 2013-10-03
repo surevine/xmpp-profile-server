@@ -12,7 +12,7 @@ Note this points to the main buddycloud repository for the java server.
 ## Discuss
 
 We have a MUC (Multi User Chat) room open to discuss this work. Please feel free to join us at 
-(https://github.com/surevine/xmpp-profile-server)[xmpp:https://github.com/surevine/xmpp-profile-server].
+(profile-server@chat.surevine.com)[xmpp:profile-server@chat.surevine.com].
 
 ## Database install
 
