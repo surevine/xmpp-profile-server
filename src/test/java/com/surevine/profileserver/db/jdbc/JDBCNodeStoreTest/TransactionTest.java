@@ -1,4 +1,4 @@
-package com.surevine.profileserver.db.jdbc;
+package com.surevine.profileserver.db.jdbc.JDBCNodeStoreTest;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.inOrder;
@@ -20,19 +20,21 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import com.surevine.profileserver.db.NodeStore;
+import com.surevine.profileserver.db.jdbc.DatabaseTester;
+import com.surevine.profileserver.db.jdbc.JDBCNodeStore;
 import com.surevine.profileserver.db.jdbc.JDBCNodeStore.NodeStoreSQLDialect;
 import com.surevine.profileserver.db.jdbc.dialect.Sql92NodeStoreDialect;
 import com.surevine.profileserver.helpers.IQTestHandler;
 
 @SuppressWarnings("serial")
-public class JDBCNodeStoreTest {
+public class TransactionTest {
 
 	DatabaseTester dbTester;
 	Connection conn;
 
 	JDBCNodeStore store;
 
-	public JDBCNodeStoreTest() throws SQLException, IOException,
+	public TransactionTest() throws SQLException, IOException,
 			ClassNotFoundException {
 		dbTester = new DatabaseTester();
 		IQTestHandler.readConf();
@@ -50,11 +52,6 @@ public class JDBCNodeStoreTest {
 	public void tearDown() throws Exception {
 		dbTester.close();
 	}
-
-	//@Test
-	//public void testCreateNodeNoConfig() throws Exception {
-		
-	//}
 
 	@Test
 	public void testBeginTransaction() throws Exception {
@@ -187,27 +184,5 @@ public class JDBCNodeStoreTest {
 		t3.commit();
 		t1.commit(); // t1 must not be committed before t2
 		t2.commit();
-	}
-
-	private void assertNodeConfigEquals(final String nodeId,
-			final Map<String, String> config) throws Exception {
-		// Check there's the correct number of config entries
-		dbTester.assertions().assertTableContains("node_config",
-				new HashMap<String, Object>() {
-					{
-						put("node", nodeId);
-					}
-				}, config.size());
-
-		for (final Entry<String, String> entry : config.entrySet()) {
-			dbTester.assertions().assertTableContains("node_config",
-					new HashMap<String, Object>() {
-						{
-							put("node", nodeId);
-							put("key", entry.getKey());
-							put("value", entry.getValue());
-						}
-					});
-		}
 	}
 }
