@@ -64,6 +64,5 @@ public class Set extends NamespaceProcessorAbstract {
 
 	private void storeUser() throws NodeStoreException {
 		nodeStore.addOwner(request.getFrom());
-
 	}
 }

@@ -42,7 +42,6 @@ public class SetTest extends IQTestHandler {
 
 		IQ response = (IQ) queue.poll();
 
-		Assert.assertEquals(IQ.Type.error, response.getType());
 		PacketError error = response.getError();
 		Assert.assertNotNull(error);
 		Assert.assertEquals(PacketError.Type.cancel, error.getType());
@@ -51,6 +50,10 @@ public class SetTest extends IQTestHandler {
 				error.getCondition());
 		Assert.assertEquals("not-local-jid",
 				error.getApplicationConditionName());
+		
+		Assert.assertEquals(IQ.Type.error, response.getType());
+		Assert.assertEquals(request.getFrom(), response.getTo());
+		Assert.assertEquals(request.getID(), response.getID());
 	}
 
 	@Test
@@ -65,13 +68,32 @@ public class SetTest extends IQTestHandler {
 
 		IQ response = (IQ) queue.poll();
 
-		Assert.assertEquals(IQ.Type.error, response.getType());
 		PacketError error = response.getError();
 		Assert.assertNotNull(error);
 		Assert.assertEquals(PacketError.Type.wait, error.getType());
 
 		Assert.assertEquals(PacketError.Condition.internal_server_error,
 				error.getCondition());
+		
+		Assert.assertEquals(IQ.Type.error, response.getType());
+		Assert.assertEquals(request.getFrom(), response.getTo());
+		Assert.assertEquals(request.getID(), response.getID());
+	}
+	
+	@Test 
+	public void testResultPacketSentOnSuccess() throws Exception {
+		register.process(request);
+
+		Assert.assertEquals(1, queue.size());
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNull(error);
+		
+		Assert.assertEquals(IQ.Type.result, response.getType());
+		Assert.assertEquals(request.getFrom(), response.getTo());
+		Assert.assertEquals(request.getID(), response.getID());
 	}
 
 }
