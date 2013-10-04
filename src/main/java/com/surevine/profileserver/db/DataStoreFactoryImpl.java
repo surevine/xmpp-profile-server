@@ -6,7 +6,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 
 import com.surevine.profileserver.db.exception.DataStoreException;
-import com.surevine.profileserver.db.jdbc.JDBCNodeStore;
+import com.surevine.profileserver.db.jdbc.JDBCDataStore;
 import com.surevine.profileserver.db.jdbc.dialect.Sql92DataStoreDialect;
 
 public class DataStoreFactoryImpl implements DataStoreFactory {
@@ -37,7 +37,7 @@ public class DataStoreFactoryImpl implements DataStoreFactory {
 		Connection connection = null;
 		try {
 			connection = new JDBCConnectionFactory(configuration).getConnection();
-			return new JDBCNodeStore(
+			return new JDBCDataStore(
 					connection,
 					new Sql92DataStoreDialect());
 		} catch (Exception e) {

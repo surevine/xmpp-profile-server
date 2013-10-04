@@ -1,4 +1,4 @@
-package com.surevine.profileserver.db.jdbc.JDBCNodeStoreTest;
+package com.surevine.profileserver.db.jdbc.JDBCDataStoreTest;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.inOrder;
@@ -21,8 +21,7 @@ import org.mockito.Mockito;
 
 import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.jdbc.DatabaseTester;
-import com.surevine.profileserver.db.jdbc.JDBCNodeStore;
-import com.surevine.profileserver.db.jdbc.JDBCNodeStore.NodeStoreSQLDialect;
+import com.surevine.profileserver.db.jdbc.JDBCDataStore;
 import com.surevine.profileserver.db.jdbc.dialect.Sql92DataStoreDialect;
 import com.surevine.profileserver.helpers.IQTestHandler;
 
@@ -32,7 +31,7 @@ public class TransactionTest {
 	DatabaseTester dbTester;
 	Connection conn;
 
-	JDBCNodeStore store;
+	JDBCDataStore store;
 
 	public TransactionTest() throws SQLException, IOException,
 			ClassNotFoundException {
@@ -44,7 +43,7 @@ public class TransactionTest {
 	public void setUp() throws Exception {
 		dbTester.initialise();
 
-		store = new JDBCNodeStore(dbTester.getConnection(),
+		store = new JDBCDataStore(dbTester.getConnection(),
 				new Sql92DataStoreDialect());
 	}
 
@@ -56,8 +55,8 @@ public class TransactionTest {
 	@Test
 	public void testBeginTransaction() throws Exception {
 		Connection conn = Mockito.mock(Connection.class);
-		JDBCNodeStore store = new JDBCNodeStore(conn,
-				mock(NodeStoreSQLDialect.class));
+		JDBCDataStore store = new JDBCDataStore(conn,
+				mock(Sql92DataStoreDialect.class));
 
 		DataStore.Transaction t = store.beginTransaction();
 
@@ -69,8 +68,8 @@ public class TransactionTest {
 	@Test
 	public void testCommitTransaction() throws Exception {
 		Connection conn = Mockito.mock(Connection.class);
-		JDBCNodeStore store = new JDBCNodeStore(conn,
-				mock(NodeStoreSQLDialect.class));
+		JDBCDataStore store = new JDBCDataStore(conn,
+				mock(Sql92DataStoreDialect.class));
 
 		DataStore.Transaction t = store.beginTransaction();
 		t.commit();
@@ -82,8 +81,8 @@ public class TransactionTest {
 	@Test
 	public void testCloseTransaction() throws Exception {
 		Connection conn = Mockito.mock(Connection.class);
-		JDBCNodeStore store = new JDBCNodeStore(conn,
-				mock(NodeStoreSQLDialect.class));
+		JDBCDataStore store = new JDBCDataStore(conn,
+				mock(Sql92DataStoreDialect.class));
 
 		DataStore.Transaction t = store.beginTransaction();
 		t.close();
@@ -97,8 +96,8 @@ public class TransactionTest {
 	public void testCloseOnAlreadyCommittedTransactionDoesntRollback()
 			throws Exception {
 		Connection conn = Mockito.mock(Connection.class);
-		JDBCNodeStore store = new JDBCNodeStore(conn,
-				mock(NodeStoreSQLDialect.class));
+		JDBCDataStore store = new JDBCDataStore(conn,
+				mock(Sql92DataStoreDialect.class));
 
 		DataStore.Transaction t = store.beginTransaction();
 		t.commit();
@@ -111,8 +110,8 @@ public class TransactionTest {
 	@Test
 	public void testNestedTransactionsOnlySetAutoCommitOnce() throws Exception {
 		Connection conn = Mockito.mock(Connection.class);
-		JDBCNodeStore store = new JDBCNodeStore(conn,
-				mock(NodeStoreSQLDialect.class));
+		JDBCDataStore store = new JDBCDataStore(conn,
+				mock(Sql92DataStoreDialect.class));
 
 		store.beginTransaction();
 
@@ -130,8 +129,8 @@ public class TransactionTest {
 	public void testNestedTransactionsOnlyCallCommitOnOuterTransaction()
 			throws Exception {
 		Connection conn = Mockito.mock(Connection.class);
-		JDBCNodeStore store = new JDBCNodeStore(conn,
-				mock(NodeStoreSQLDialect.class));
+		JDBCDataStore store = new JDBCDataStore(conn,
+				mock(Sql92DataStoreDialect.class));
 
 		InOrder inOrder = inOrder(conn);
 
@@ -158,8 +157,8 @@ public class TransactionTest {
 	@Test(expected = IllegalStateException.class)
 	public void testNestedTransactionsWithRollbackInMiddle() throws Exception {
 		Connection conn = Mockito.mock(Connection.class);
-		JDBCNodeStore store = new JDBCNodeStore(conn,
-				mock(NodeStoreSQLDialect.class));
+		JDBCDataStore store = new JDBCDataStore(conn,
+				mock(Sql92DataStoreDialect.class));
 
 		DataStore.Transaction t1 = store.beginTransaction();
 		DataStore.Transaction t2 = store.beginTransaction();
@@ -174,8 +173,8 @@ public class TransactionTest {
 	public void testNestedTransactionsWithOutOfOrderCommitsThrowsException()
 			throws Exception {
 		Connection conn = Mockito.mock(Connection.class);
-		JDBCNodeStore store = new JDBCNodeStore(conn,
-				mock(NodeStoreSQLDialect.class));
+		JDBCDataStore store = new JDBCDataStore(conn,
+				mock(Sql92DataStoreDialect.class));
 
 		DataStore.Transaction t1 = store.beginTransaction();
 		DataStore.Transaction t2 = store.beginTransaction();

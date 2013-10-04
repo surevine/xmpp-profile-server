@@ -23,12 +23,13 @@ import org.xmpp.resultsetmanagement.ResultSetImpl;
 import com.surevine.profileserver.Configuration;
 import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.exception.DataStoreException;
+import com.surevine.profileserver.db.jdbc.dialect.Sql92DataStoreDialect;
 
-public class JDBCNodeStore implements DataStore {
+public class JDBCDataStore implements DataStore {
 
-	private Logger logger = Logger.getLogger(JDBCNodeStore.class);
+	private Logger logger = Logger.getLogger(JDBCDataStore.class);
 	private final Connection conn;
-	private final NodeStoreSQLDialect dialect;
+	private final Sql92DataStoreDialect dialect;
 	private final Deque<JDBCTransaction> transactionStack;
 	private boolean transactionHasBeenRolledBack = false;
 
@@ -39,12 +40,13 @@ public class JDBCNodeStore implements DataStore {
 	 * @param conn
 	 *            the connection to the backing database.
 	 */
-	public JDBCNodeStore(final Connection conn,
-			final NodeStoreSQLDialect dialect) {
+	public JDBCDataStore(final Connection conn,
+			final Sql92DataStoreDialect dialect) {
 		this.conn = conn;
 		this.dialect = dialect;
 		transactionStack = new ArrayDeque<JDBCTransaction>();
 	}
+
 
 	@Override
 	public boolean hasOwner(JID user) throws DataStoreException {
@@ -113,10 +115,10 @@ public class JDBCNodeStore implements DataStore {
 	}
 
 	public class JDBCTransaction implements Transaction {
-		private JDBCNodeStore store;
+		private JDBCDataStore store;
 		private boolean closed;
 
-		private JDBCTransaction(final JDBCNodeStore store) throws SQLException {
+		private JDBCTransaction(final JDBCDataStore store) throws SQLException {
 			this.store = store;
 			closed = false;
 
@@ -196,7 +198,7 @@ public class JDBCNodeStore implements DataStore {
 		}
 	}
 
-	public interface NodeStoreSQLDialect {
+	public interface DataStoreSQLDialect {
 
 		String selectOwner();
 

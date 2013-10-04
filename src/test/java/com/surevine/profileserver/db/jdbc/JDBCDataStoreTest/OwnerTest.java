@@ -1,4 +1,4 @@
-package com.surevine.profileserver.db.jdbc.JDBCNodeStoreTest;
+package com.surevine.profileserver.db.jdbc.JDBCDataStoreTest;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.inOrder;
@@ -24,8 +24,8 @@ import org.xmpp.packet.JID;
 
 import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.jdbc.DatabaseTester;
-import com.surevine.profileserver.db.jdbc.JDBCNodeStore;
-import com.surevine.profileserver.db.jdbc.JDBCNodeStore.NodeStoreSQLDialect;
+import com.surevine.profileserver.db.jdbc.JDBCDataStore;
+import com.surevine.profileserver.db.jdbc.JDBCDataStore.DataStoreSQLDialect;
 import com.surevine.profileserver.db.jdbc.dialect.Sql92DataStoreDialect;
 import com.surevine.profileserver.helpers.IQTestHandler;
 
@@ -35,7 +35,7 @@ public class OwnerTest {
 	DatabaseTester dbTester;
 	Connection conn;
 
-	JDBCNodeStore store;
+	JDBCDataStore store;
 
 	public OwnerTest() throws SQLException, IOException,
 			ClassNotFoundException {
@@ -47,7 +47,7 @@ public class OwnerTest {
 	public void setUp() throws Exception {
 		dbTester.initialise();
 
-		store = new JDBCNodeStore(dbTester.getConnection(),
+		store = new JDBCDataStore(dbTester.getConnection(),
 				new Sql92DataStoreDialect());
 	}
 

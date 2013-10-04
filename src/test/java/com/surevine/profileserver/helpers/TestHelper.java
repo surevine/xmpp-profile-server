@@ -13,7 +13,7 @@ import com.surevine.profileserver.db.DataStoreFactory;
 import com.surevine.profileserver.db.DataStoreFactoryImpl;
 import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.db.jdbc.DatabaseTester;
-import com.surevine.profileserver.db.jdbc.JDBCNodeStore;
+import com.surevine.profileserver.db.jdbc.JDBCDataStore;
 import com.surevine.profileserver.db.jdbc.dialect.Sql92DataStoreDialect;
 import com.surevine.profileserver.queue.InQueueConsumer;
 
@@ -55,7 +55,7 @@ public class TestHelper {
 			@Override
 			public DataStore create() {
 					try {
-						return new JDBCNodeStore(new DatabaseTester().getConnection(), new Sql92DataStoreDialect());
+						return new JDBCDataStore(new DatabaseTester().getConnection(), new Sql92DataStoreDialect());
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
