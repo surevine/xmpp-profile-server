@@ -10,6 +10,7 @@ import org.xmpp.packet.Packet;
 import org.xmpp.packet.PacketError;
 
 import com.surevine.profileserver.db.NodeStore;
+import com.surevine.profileserver.db.exception.NodeStoreException;
 import com.surevine.profileserver.packetprocessor.iq.NamespaceProcessorAbstract;
 
 public class Get extends NamespaceProcessorAbstract {
@@ -43,7 +44,7 @@ public class Get extends NamespaceProcessorAbstract {
 		
 	}
 
-	private void handleJidRequest() {
+	private void handleJidRequest() throws NodeStoreException {
 		JID user = new JID(vcard.attributeValue("jid"));
 		if (false == nodeStore.hasOwner(user)) {
 			setErrorCondition(PacketError.Type.cancel, PacketError.Condition.item_not_found);
