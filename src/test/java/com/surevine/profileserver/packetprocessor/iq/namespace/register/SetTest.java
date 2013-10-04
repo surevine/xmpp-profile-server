@@ -18,10 +18,10 @@ import com.surevine.profileserver.db.exception.NodeStoreException;
 import com.surevine.profileserver.helpers.IQTestHandler;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
 
-public class GetTest extends IQTestHandler {
+public class SetTest extends IQTestHandler {
 
 	private NodeStore nodeStore;
-	private Get register;
+	private Set register;
 	private LinkedBlockingQueue<Packet> queue;
 	private IQ request;
 
@@ -29,7 +29,7 @@ public class GetTest extends IQTestHandler {
 	public void setUp() throws Exception {
 		nodeStore = Mockito.mock(NodeStore.class);
 		queue = new LinkedBlockingQueue<Packet>();
-		register = new Get(queue, readConf(), nodeStore);
+		register = new Set(queue, readConf(), nodeStore);
 		request = readStanzaAsIq("/register/request");
 	}
 

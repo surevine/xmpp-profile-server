@@ -14,23 +14,23 @@ public class Register extends AbstractNamespace {
 
 	public static final String NAMESPACE_URI = "jabber:iq:register";
 
-	private final PacketProcessor<IQ> getProcessor;
+	private final PacketProcessor<IQ> setProcessor;
 
 	public Register(BlockingQueue<Packet> outQueue, Properties configuration,
 			NodeStore nodeStore) {
 
 		super(outQueue, configuration, nodeStore);
-		getProcessor = new Get(outQueue, configuration, nodeStore);
+		setProcessor = new Set(outQueue, configuration, nodeStore);
 	}
 
 	@Override
 	protected PacketProcessor<IQ> get() {
-		return getProcessor;
+		return null;
 	}
 
 	@Override
 	protected PacketProcessor<IQ> set() {
-		return null;
+		return setProcessor;
 	}
 
 	@Override

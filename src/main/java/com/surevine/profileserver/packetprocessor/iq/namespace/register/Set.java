@@ -22,15 +22,15 @@ import com.surevine.profileserver.packetprocessor.PacketProcessor;
 import com.surevine.profileserver.packetprocessor.iq.NamespaceProcessorAbstract;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
 
-public class Get extends NamespaceProcessorAbstract {
+public class Set extends NamespaceProcessorAbstract {
 
 	public static final String ELEMENT_NAME = "query";
-	private static final Logger logger = Logger.getLogger(Get.class);
+	private static final Logger logger = Logger.getLogger(Set.class);
 
 	private Element query;
 	private Map<String, String> conf;
 
-	public Get(BlockingQueue<Packet> outQueue, Properties configuration,
+	public Set(BlockingQueue<Packet> outQueue, Properties configuration,
 			NodeStore nodeStore) {
 		super(outQueue, configuration, nodeStore);
 	}
