@@ -45,7 +45,7 @@ public class Get extends NamespaceProcessorAbstract {
 
 	private void handleJidRequest() {
 		JID user = new JID(vcard.attributeValue("jid"));
-		if (false == nodeStore.hasUser(user)) {
+		if (false == nodeStore.hasOwner(user)) {
 			setErrorCondition(PacketError.Type.cancel, PacketError.Condition.item_not_found);
 			return;
 		}

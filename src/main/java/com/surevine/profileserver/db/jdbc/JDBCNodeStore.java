@@ -47,7 +47,7 @@ public class JDBCNodeStore implements NodeStore {
 	}
 
 	@Override
-	public boolean hasUser(JID user) {
+	public boolean hasOwner(JID user) {
 		// TODO Auto-generated method stub
 		return false;
 	}

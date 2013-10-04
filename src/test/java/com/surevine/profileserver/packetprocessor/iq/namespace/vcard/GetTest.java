@@ -54,7 +54,7 @@ public class GetTest extends IQTestHandler {
 	@Test
 	public void testNonExistingUserReturnsItemNotFound() throws Exception {
 		
-		Mockito.when(nodeStore.hasUser(Mockito.any(JID.class))).thenReturn(false);
+		Mockito.when(nodeStore.hasOwner(Mockito.any(JID.class))).thenReturn(false);
 		
 		vcard.process(readStanzaAsIq("/vcard/get-jid-attribute"));
 
