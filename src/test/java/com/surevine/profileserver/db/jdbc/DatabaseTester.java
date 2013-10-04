@@ -98,7 +98,7 @@ public class DatabaseTester {
 	}
 	
 	public void close() throws SQLException {
-		if(conn != null) {
+		if (conn != null) {
 			executeDDL(conn, "SHUTDOWN");
 			conn = null;
 		}
@@ -114,12 +114,10 @@ public class DatabaseTester {
 	private void createSchema(final Connection conn) throws SQLException, IOException {
 		executeDDL(conn, "SET DATABASE SQL SYNTAX PGS TRUE;");
 		loadData("base");
-		//loadData("upgrade-1");
-		//loadData("upgrade-2");
 	}
 
 	public void loadData(final String scriptName) throws SQLException, IOException {
-		URL url = getClass().getResource("/org/buddycloud/channelserver/testing/jdbc/scripts/" + scriptName + ".sql");
+		URL url = getClass().getResource("/com/surevine/profileserver/testing/jdbc/scripts/" + scriptName + ".sql");
 		runScript(conn, new InputStreamReader(url.openStream()));
 	}
 	
