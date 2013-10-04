@@ -47,9 +47,27 @@ public class JDBCNodeStore implements NodeStore {
 	}
 
 	@Override
-	public boolean hasOwner(JID user) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean hasOwner(JID user) throws NodeStoreException {
+		PreparedStatement existsStatement = null;
+		try {
+			existsStatement = conn.prepareStatement(dialect.selectOwner());
+			existsStatement.setString(1, user.toBareJID());
+			java.sql.ResultSet rs = existsStatement.executeQuery();
+			System.out.println(dialect.selectOwner());
+			System.out.println(user.toBareJID());
+
+			boolean exists = rs.next();
+
+			rs.close();
+			existsStatement.close();
+            
+			return exists;
+		} catch (SQLException e) {
+			throw new NodeStoreException(e);
+		} finally {
+			close(existsStatement); // Will implicitly close the resultset if
+									// required
+		}
 	}
 	
 	@Override
@@ -179,6 +197,8 @@ public class JDBCNodeStore implements NodeStore {
 	}
 
 	public interface NodeStoreSQLDialect {
+
+		String selectOwner();
 
 	}
 }

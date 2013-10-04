@@ -81,9 +81,7 @@ public class DatabaseTester {
 			assertEquals("Expected query " + sql.toString() + " to return " + expectedRows, expectedRows, rs.getInt(1));
 		}
 	}
-	
-	
-	
+
 	private Connection conn;
 	
 	public DatabaseTester() throws SQLException, IOException, ClassNotFoundException {
@@ -105,7 +103,7 @@ public class DatabaseTester {
 	}
 
 	public Connection getConnection() throws SQLException {
-		if(conn == null) {
+		if (conn == null) {
 			conn = DriverManager.getConnection("jdbc:log4jdbc:hsqldb:mem:test", "sa", "");
 		}
 		return conn;

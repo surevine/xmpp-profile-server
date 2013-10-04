@@ -60,4 +60,10 @@ public class OwnerTest {
 	public void testUnknownOwnerReturnsFalse() throws Exception {
 		Assert.assertFalse(store.hasOwner(new JID("user@example.com")));
 	}
+	
+	@Test
+	public void testKnownOwnerReturnsTrue() throws Exception {
+		dbTester.loadData("basic-data");
+		Assert.assertTrue(store.hasOwner(new JID("owner@example.com")));
+	}
 }

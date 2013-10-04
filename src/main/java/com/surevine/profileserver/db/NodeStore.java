@@ -17,8 +17,9 @@ public interface NodeStore {
 	
 	/**
 	 * Return whether a user has a record in the database
+	 * @throws NodeStoreException 
 	 */
-	boolean hasOwner(JID user);
+	boolean hasOwner(JID user) throws NodeStoreException;
 	
     /**
      * Adds an owner to the system
