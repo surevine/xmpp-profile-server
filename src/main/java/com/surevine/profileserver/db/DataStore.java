@@ -28,6 +28,14 @@ public interface DataStore {
      */
 	void addOwner(JID jid) throws DataStoreException;
 	
+    /**
+     * Remove an owner from the system
+     * 
+     * @param ownerJid
+     * @throws DataStoreException 
+     */
+	void removeOwner(JID ownerJid) throws DataStoreException;
+	
 	/**
 	 * Closes this node store instance and releases any resources.
 	 */

@@ -49,18 +49,15 @@ public class JDBCDataStore implements DataStore {
 
 
 	@Override
-	public boolean hasOwner(JID user) throws DataStoreException {
+	public boolean hasOwner(JID jid) throws DataStoreException {
 		PreparedStatement existsStatement = null;
 		try {
 			existsStatement = conn.prepareStatement(dialect.selectOwner());
-			existsStatement.setString(1, user.toBareJID());
+			existsStatement.setString(1, jid.toBareJID());
 			java.sql.ResultSet rs = existsStatement.executeQuery();
-			System.out.println(dialect.selectOwner());
-			System.out.println(user.toBareJID());
 
 			boolean exists = rs.next();
-
-			rs.close();
+            rs.close();
 			existsStatement.close();
             
 			return exists;
@@ -74,8 +71,32 @@ public class JDBCDataStore implements DataStore {
 	
 	@Override
 	public void addOwner(JID jid) throws DataStoreException {
-		// TODO Auto-generated method stub
-		
+		PreparedStatement addStatement = null;
+		try {
+			addStatement = conn.prepareStatement(dialect.addOwner());
+			addStatement.setString(1, jid.toBareJID());
+			addStatement.executeUpdate();
+			addStatement.close();
+		} catch (SQLException e) {
+			throw new DataStoreException(e);
+		} finally {
+			close(addStatement);
+		}
+	}
+	
+    @Override
+	public void removeOwner(JID jid) throws DataStoreException {
+		PreparedStatement deleteStatement = null;
+		try {
+			deleteStatement = conn.prepareStatement(dialect.deleteOwner());
+			deleteStatement.setString(1, jid.toBareJID());
+			deleteStatement.execute();
+			deleteStatement.close();
+		} catch (SQLException e) {
+			throw new DataStoreException(e);
+		} finally {
+			close(deleteStatement);
+		}
 	}
 	
 	@Override
@@ -203,6 +224,8 @@ public class JDBCDataStore implements DataStore {
 		String selectOwner();
 
 		String deleteOwner();
+
+		String addOwner();
 
 	}
 }

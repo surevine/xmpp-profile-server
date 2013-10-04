@@ -1,31 +1,18 @@
 package com.surevine.profileserver.db.jdbc.JDBCDataStoreTest;
 
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
 import org.xmpp.packet.JID;
 
-import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.jdbc.DatabaseTester;
 import com.surevine.profileserver.db.jdbc.JDBCDataStore;
-import com.surevine.profileserver.db.jdbc.JDBCDataStore.DataStoreSQLDialect;
 import com.surevine.profileserver.db.jdbc.dialect.Sql92DataStoreDialect;
 import com.surevine.profileserver.helpers.IQTestHandler;
 
@@ -36,6 +23,7 @@ public class OwnerTest {
 	Connection conn;
 
 	JDBCDataStore store;
+	private JID ownerJid = new JID("owner@example.com");
 
 	public OwnerTest() throws SQLException, IOException,
 			ClassNotFoundException {
@@ -58,12 +46,27 @@ public class OwnerTest {
 
 	@Test
 	public void testUnknownOwnerReturnsFalse() throws Exception {
-		Assert.assertFalse(store.hasOwner(new JID("user@example.com")));
+		Assert.assertFalse(store.hasOwner(ownerJid));
 	}
 	
 	@Test
 	public void testKnownOwnerReturnsTrue() throws Exception {
 		dbTester.loadData("basic-data");
-		Assert.assertTrue(store.hasOwner(new JID("owner@example.com")));
+		Assert.assertTrue(store.hasOwner(ownerJid));
+	}
+	
+	@Test
+	public void testCanAddOwner() throws Exception {
+		Assert.assertFalse(store.hasOwner(ownerJid));
+		store.addOwner(new JID("owner@example.com"));
+		Assert.assertTrue(store.hasOwner(ownerJid));
+	}
+	
+	@Test
+	public void testCanDeleteOwner() throws Exception {
+		dbTester.loadData("basic-data");
+		Assert.assertTrue(store.hasOwner(ownerJid));
+		store.removeOwner(ownerJid);
+		Assert.assertFalse(store.hasOwner(ownerJid));
 	}
 }
