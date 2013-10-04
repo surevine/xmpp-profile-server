@@ -1,0 +1,1 @@
+INSERT INTO owners VALUES ('owner@example.com', NOW());
