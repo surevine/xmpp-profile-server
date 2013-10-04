@@ -45,7 +45,7 @@ public abstract class NamespaceProcessorAbstract
 	public NamespaceProcessorAbstract(BlockingQueue<Packet> outQueue, Properties configuration, DataStore dataStore) {
 		this.setOutQueue(outQueue);
 		this.configuration = configuration;
-		this.setNodeStore(dataStore);
+		this.setDataStore(dataStore);
     }
 
 	public void setOutQueue(BlockingQueue<Packet> outQueue)
@@ -53,7 +53,7 @@ public abstract class NamespaceProcessorAbstract
 		this.outQueue = outQueue;
 	}
 
-	public void setNodeStore(DataStore dataStore)
+	public void setDataStore(DataStore dataStore)
 	{
 		this.dataStore = dataStore;
 	}

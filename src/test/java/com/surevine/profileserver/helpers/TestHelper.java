@@ -25,7 +25,7 @@ public class TestHelper {
 	DataStoreFactory dataStoreFactory;
 	
 	public TestHelper() throws FileNotFoundException, IOException {
-		initialiseNodeStoreFactory();
+		initialiseDataStoreFactory();
 
         outQueue = new LinkedBlockingQueue<Packet>();
         inQueue = new LinkedBlockingQueue<Packet>();
@@ -49,7 +49,7 @@ public class TestHelper {
 		return dataStoreFactory;
 	}
 	
-    private DataStoreFactory initialiseNodeStoreFactory() {
+    private DataStoreFactory initialiseDataStoreFactory() {
     	DataStoreFactory nsFactory = new DataStoreFactory() {
 			
 			@Override

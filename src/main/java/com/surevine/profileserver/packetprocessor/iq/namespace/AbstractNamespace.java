@@ -80,7 +80,7 @@ public abstract class AbstractNamespace implements PacketProcessor<IQ> {
 		outQueue.put(reply);
 	}
 
-	protected DataStore getNodeStore() {
+	protected DataStore getDataStore() {
 		return dataStore;
 	}
 

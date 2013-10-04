@@ -41,7 +41,7 @@ public class DataStoreFactoryImpl implements DataStoreFactory {
 					connection,
 					new Sql92DataStoreDialect());
 		} catch (Exception e) {
-			LOGGER.error("JDBCNodeStore failed to initialize.", e);
+			LOGGER.error("JDBCDataStore failed to initialize.", e);
 		}
 		return null;
 	}
