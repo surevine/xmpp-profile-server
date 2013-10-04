@@ -4,7 +4,7 @@ CREATE TABLE schema_version (version INT NOT NULL PRIMARY KEY,
                              "when" TIMESTAMP,
                              description TEXT);
 INSERT INTO schema_version (version, "when", description)
-       VALUES (1, 'now', 'Initial install');
+       VALUES (1, now(), 'Initial install');
        
 CREATE TABLE owners (owner TEXT NOT NULL,
     last_updated TIMESTAMP,
