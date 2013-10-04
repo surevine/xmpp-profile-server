@@ -200,5 +200,7 @@ public class JDBCNodeStore implements DataStore {
 
 		String selectOwner();
 
+		String deleteOwner();
+
 	}
 }
