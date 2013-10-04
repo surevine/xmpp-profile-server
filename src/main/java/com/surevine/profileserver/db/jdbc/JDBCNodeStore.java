@@ -21,10 +21,10 @@ import org.xmpp.resultsetmanagement.ResultSet;
 import org.xmpp.resultsetmanagement.ResultSetImpl;
 
 import com.surevine.profileserver.Configuration;
-import com.surevine.profileserver.db.NodeStore;
-import com.surevine.profileserver.db.exception.NodeStoreException;
+import com.surevine.profileserver.db.DataStore;
+import com.surevine.profileserver.db.exception.DataStoreException;
 
-public class JDBCNodeStore implements NodeStore {
+public class JDBCNodeStore implements DataStore {
 
 	private Logger logger = Logger.getLogger(JDBCNodeStore.class);
 	private final Connection conn;
@@ -47,7 +47,7 @@ public class JDBCNodeStore implements NodeStore {
 	}
 
 	@Override
-	public boolean hasOwner(JID user) throws NodeStoreException {
+	public boolean hasOwner(JID user) throws DataStoreException {
 		PreparedStatement existsStatement = null;
 		try {
 			existsStatement = conn.prepareStatement(dialect.selectOwner());
@@ -63,7 +63,7 @@ public class JDBCNodeStore implements NodeStore {
             
 			return exists;
 		} catch (SQLException e) {
-			throw new NodeStoreException(e);
+			throw new DataStoreException(e);
 		} finally {
 			close(existsStatement); // Will implicitly close the resultset if
 									// required
@@ -71,13 +71,13 @@ public class JDBCNodeStore implements NodeStore {
 	}
 	
 	@Override
-	public void addOwner(JID jid) throws NodeStoreException {
+	public void addOwner(JID jid) throws DataStoreException {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
-	public Transaction beginTransaction() throws NodeStoreException {
+	public Transaction beginTransaction() throws DataStoreException {
 		if (transactionHasBeenRolledBack) {
 			throw new IllegalStateException(
 					"The transaction has already been rolled back");
@@ -87,7 +87,7 @@ public class JDBCNodeStore implements NodeStore {
 		try {
 			transaction = new JDBCTransaction(this);
 		} catch (SQLException e) {
-			throw new NodeStoreException(e);
+			throw new DataStoreException(e);
 		}
 		return transaction;
 	}
@@ -106,7 +106,7 @@ public class JDBCNodeStore implements NodeStore {
 		}
 	}
 
-	private void close(final Transaction trans) throws NodeStoreException {
+	private void close(final Transaction trans) throws DataStoreException {
 		if (trans != null) {
 			trans.close();
 		}
@@ -128,7 +128,7 @@ public class JDBCNodeStore implements NodeStore {
 		}
 
 		@Override
-		public void commit() throws NodeStoreException {
+		public void commit() throws DataStoreException {
 			if (closed) {
 				throw new IllegalStateException(
 						"Commit called on transaction that is already closed");
@@ -152,12 +152,12 @@ public class JDBCNodeStore implements NodeStore {
 					store.transactionHasBeenRolledBack = false;
 				}
 			} catch (SQLException e) {
-				throw new NodeStoreException(e);
+				throw new DataStoreException(e);
 			}
 		}
 
 		@Override
-		public void close() throws NodeStoreException {
+		public void close() throws DataStoreException {
 			if (closed) {
 				return; // Do nothing nicely and silently
 			}
@@ -178,7 +178,7 @@ public class JDBCNodeStore implements NodeStore {
 					store.transactionHasBeenRolledBack = false;
 				}
 			} catch (SQLException e) {
-				throw new NodeStoreException(e);
+				throw new DataStoreException(e);
 			}
 		}
 
@@ -188,11 +188,11 @@ public class JDBCNodeStore implements NodeStore {
 	}
 
 	@Override
-	public void close() throws NodeStoreException {
+	public void close() throws DataStoreException {
 		try {
 			conn.close();
 		} catch (SQLException e) {
-			throw new NodeStoreException(e);
+			throw new DataStoreException(e);
 		}
 	}
 

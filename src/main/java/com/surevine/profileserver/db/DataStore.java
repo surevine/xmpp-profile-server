@@ -5,33 +5,33 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.surevine.profileserver.db.exception.NodeStoreException;
+import com.surevine.profileserver.db.exception.DataStoreException;
 import org.xmpp.packet.JID;
 import org.xmpp.resultsetmanagement.ResultSet;
 
 /**
- * NodeStore is a interface for classes which have the ability to store and
+ * DataStore is a interface for classes which have the ability to store and
  * retrieve nodes, and user affiliations and subscriptions to those nodes.
  */
-public interface NodeStore {
+public interface DataStore {
 	
 	/**
 	 * Return whether a user has a record in the database
-	 * @throws NodeStoreException 
+	 * @throws DataStoreException 
 	 */
-	boolean hasOwner(JID user) throws NodeStoreException;
+	boolean hasOwner(JID user) throws DataStoreException;
 	
     /**
      * Adds an owner to the system
      * 
      * @param JID jid
      */
-	void addOwner(JID jid) throws NodeStoreException;
+	void addOwner(JID jid) throws DataStoreException;
 	
 	/**
 	 * Closes this node store instance and releases any resources.
 	 */
-	void close() throws NodeStoreException;
+	void close() throws DataStoreException;
 	
 	/**
 	 * Begins an atomic transaction. The transaction will include any operations
@@ -44,26 +44,26 @@ public interface NodeStore {
 	 * 
 	 * @return the transaction object which can be used to commit or rollback
 	 *         the transaction.
-	 * @throws NodeStoreException
+	 * @throws DataStoreException
 	 * @throws IllegalStateException
 	 *             if a failed (i.e. rolled back) transaction is in progress
 	 */
-	Transaction beginTransaction() throws NodeStoreException;
+	Transaction beginTransaction() throws DataStoreException;
 
 	/**
-	 * A {@link NodeStore} transaction.
+	 * A {@link DataStore} transaction.
 	 */
 	public interface Transaction {
 
 		/**
 		 * Commits and closes the transaction.
 		 * 
-		 * @throws NodeStoreException
+		 * @throws DataStoreException
 		 * 
 		 * @throws IllegalStateException
 		 *             if the transaction has already been closed.
 		 */
-		void commit() throws NodeStoreException;
+		void commit() throws DataStoreException;
 
 		/**
 		 * Closes and rolls back the transaction.
@@ -77,7 +77,7 @@ public interface NodeStore {
 		 * Transaction transaction = null;
 		 * 
 		 * try {
-		 *   transaction = nodeStore.beginTransaction();
+		 *   transaction = dataStore.beginTransaction();
 		 * 
 		 *   ... Do some stuff ...
 		 *   
@@ -89,6 +89,6 @@ public interface NodeStore {
 		 * 
 		 * </blockquote>
 		 */
-		void close() throws NodeStoreException;
+		void close() throws DataStoreException;
 	}
 }

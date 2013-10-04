@@ -8,13 +8,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.xmpp.packet.Packet;
 
 import com.surevine.profileserver.Configuration;
-import com.surevine.profileserver.db.NodeStore;
-import com.surevine.profileserver.db.NodeStoreFactory;
-import com.surevine.profileserver.db.NodeStoreFactoryImpl;
-import com.surevine.profileserver.db.exception.NodeStoreException;
+import com.surevine.profileserver.db.DataStore;
+import com.surevine.profileserver.db.DataStoreFactory;
+import com.surevine.profileserver.db.DataStoreFactoryImpl;
+import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.db.jdbc.DatabaseTester;
 import com.surevine.profileserver.db.jdbc.JDBCNodeStore;
-import com.surevine.profileserver.db.jdbc.dialect.Sql92NodeStoreDialect;
+import com.surevine.profileserver.db.jdbc.dialect.Sql92DataStoreDialect;
 import com.surevine.profileserver.queue.InQueueConsumer;
 
 public class TestHelper {
@@ -22,14 +22,14 @@ public class TestHelper {
 	LinkedBlockingQueue<Packet> inQueue;
 	InQueueConsumer consumer;
 	
-	NodeStoreFactory nodeStoreFactory;
+	DataStoreFactory dataStoreFactory;
 	
 	public TestHelper() throws FileNotFoundException, IOException {
 		initialiseNodeStoreFactory();
 
         outQueue = new LinkedBlockingQueue<Packet>();
         inQueue = new LinkedBlockingQueue<Packet>();
-        consumer = new InQueueConsumer(outQueue, Configuration.getInstance(), inQueue, nodeStoreFactory);
+        consumer = new InQueueConsumer(outQueue, Configuration.getInstance(), inQueue, dataStoreFactory);
         consumer.start();
 	}
 	
@@ -45,17 +45,17 @@ public class TestHelper {
 		return consumer;
 	}
 	  
-	public NodeStoreFactory getChannelManagerFactory() {
-		return nodeStoreFactory;
+	public DataStoreFactory getChannelManagerFactory() {
+		return dataStoreFactory;
 	}
 	
-    private NodeStoreFactory initialiseNodeStoreFactory() {
-    	NodeStoreFactory nsFactory = new NodeStoreFactory() {
+    private DataStoreFactory initialiseNodeStoreFactory() {
+    	DataStoreFactory nsFactory = new DataStoreFactory() {
 			
 			@Override
-			public NodeStore create() {
+			public DataStore create() {
 					try {
-						return new JDBCNodeStore(new DatabaseTester().getConnection(), new Sql92NodeStoreDialect());
+						return new JDBCNodeStore(new DatabaseTester().getConnection(), new Sql92DataStoreDialect());
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -71,14 +71,14 @@ public class TestHelper {
 		};
     	
 		try {
-			nodeStoreFactory = new NodeStoreFactoryImpl(IQTestHandler.readConf());
+			dataStoreFactory = new DataStoreFactoryImpl(IQTestHandler.readConf());
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (NodeStoreException e) {
+		} catch (DataStoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

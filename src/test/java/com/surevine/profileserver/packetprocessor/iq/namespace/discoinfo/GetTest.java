@@ -13,13 +13,13 @@ import org.xmpp.packet.IQ;
 import org.xmpp.packet.Packet;
 
 import com.surevine.profileserver.Configuration;
-import com.surevine.profileserver.db.NodeStore;
+import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.helpers.IQTestHandler;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
 
 public class GetTest extends IQTestHandler {
 
-	private NodeStore nodeStore;
+	private DataStore dataStore;
 	private Get discoInfo;
 	private LinkedBlockingQueue<Packet> queue;
 
@@ -27,10 +27,10 @@ public class GetTest extends IQTestHandler {
 
 	@Before
 	public void setUp() throws Exception {
-		nodeStore = Mockito.mock(NodeStore.class);
+		dataStore = Mockito.mock(DataStore.class);
 		queue = new LinkedBlockingQueue<Packet>();
 
-		discoInfo = new Get(queue, nodeStore);
+		discoInfo = new Get(queue, dataStore);
 		request = readStanzaAsIq("/disco-info/get");
 	}
 

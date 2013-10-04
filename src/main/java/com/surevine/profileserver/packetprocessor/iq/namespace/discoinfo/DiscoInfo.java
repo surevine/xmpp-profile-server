@@ -6,7 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.Packet;
 
-import com.surevine.profileserver.db.NodeStore;
+import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
 import com.surevine.profileserver.packetprocessor.iq.namespace.AbstractNamespace;
 
@@ -17,10 +17,10 @@ public class DiscoInfo extends AbstractNamespace {
 	private final PacketProcessor<IQ> getProcessor;
 
 	public DiscoInfo(BlockingQueue<Packet> outQueue, Properties conf,
-			NodeStore nodeStore) {
+			DataStore dataStore) {
 
-		super(outQueue, conf, nodeStore);
-		getProcessor = new Get(outQueue, nodeStore);
+		super(outQueue, conf, dataStore);
+		getProcessor = new Get(outQueue, dataStore);
 	}
 
 	@Override

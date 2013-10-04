@@ -17,7 +17,7 @@ import org.xmpp.packet.PacketError.Condition;
 import org.xmpp.packet.PacketError.Type;
 
 import com.surevine.profileserver.Configuration;
-import com.surevine.profileserver.db.NodeStore;
+import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
 
 public abstract class NamespaceProcessorAbstract
@@ -29,7 +29,7 @@ public abstract class NamespaceProcessorAbstract
 	public static Logger logger = Logger.getLogger(NamespaceProcessorAbstract.class);
 	
     protected BlockingQueue<Packet> outQueue;
-    protected NodeStore        nodeStore;
+    protected DataStore        dataStore;
     protected Element          element;
     protected IQ               response;
     protected IQ               request;
@@ -42,10 +42,10 @@ public abstract class NamespaceProcessorAbstract
 	protected Properties configuration;
 	private String serverDomain;
 	
-	public NamespaceProcessorAbstract(BlockingQueue<Packet> outQueue, Properties configuration, NodeStore nodeStore) {
+	public NamespaceProcessorAbstract(BlockingQueue<Packet> outQueue, Properties configuration, DataStore dataStore) {
 		this.setOutQueue(outQueue);
 		this.configuration = configuration;
-		this.setNodeStore(nodeStore);
+		this.setNodeStore(dataStore);
     }
 
 	public void setOutQueue(BlockingQueue<Packet> outQueue)
@@ -53,9 +53,9 @@ public abstract class NamespaceProcessorAbstract
 		this.outQueue = outQueue;
 	}
 
-	public void setNodeStore(NodeStore nodeStore)
+	public void setNodeStore(DataStore dataStore)
 	{
-		this.nodeStore = nodeStore;
+		this.dataStore = dataStore;
 	}
 	
 	public void setServerDomain(String domain)

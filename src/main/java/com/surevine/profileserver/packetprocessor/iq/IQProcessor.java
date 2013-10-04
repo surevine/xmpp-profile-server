@@ -11,7 +11,7 @@ import org.xmpp.packet.Packet;
 import org.xmpp.packet.PacketError;
 
 import com.surevine.profileserver.Configuration;
-import com.surevine.profileserver.db.NodeStore;
+import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
 import com.surevine.profileserver.packetprocessor.iq.namespace.discoinfo.DiscoInfo;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
@@ -25,15 +25,15 @@ public class IQProcessor implements PacketProcessor<IQ> {
 	private BlockingQueue<Packet> outQueue;
 
 	public IQProcessor(BlockingQueue<Packet> outQueue,
-			Configuration configuration, NodeStore nodeStore) {
+			Configuration configuration, DataStore dataStore) {
 		this.outQueue = outQueue;
 
 		processorsPerNamespace.put(VCard.NAMESPACE_URI, new VCard(outQueue,
-				configuration, nodeStore));
+				configuration, dataStore));
 		processorsPerNamespace.put(DiscoInfo.NAMESPACE_URI, new DiscoInfo(
-				outQueue, configuration, nodeStore));
+				outQueue, configuration, dataStore));
 		processorsPerNamespace.put(Register.NAMESPACE_URI, new Register(
-				outQueue, configuration, nodeStore));
+				outQueue, configuration, dataStore));
 	}
 
 	@Override

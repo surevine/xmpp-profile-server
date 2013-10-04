@@ -14,12 +14,12 @@ import org.xmpp.packet.JID;
 import org.xmpp.packet.Packet;
 import org.xmpp.packet.PacketError;
 
-import com.surevine.profileserver.db.NodeStore;
+import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.helpers.IQTestHandler;
 
 public class GetTest extends IQTestHandler {
 
-	private NodeStore nodeStore;
+	private DataStore dataStore;
 	private Get vcard;
 	private LinkedBlockingQueue<Packet> queue;
 
@@ -27,10 +27,10 @@ public class GetTest extends IQTestHandler {
 
 	@Before
 	public void setUp() throws Exception {
-		nodeStore = Mockito.mock(NodeStore.class);
+		dataStore = Mockito.mock(DataStore.class);
 		queue = new LinkedBlockingQueue<Packet>();
 
-		vcard = new Get(queue, readConf(), nodeStore);
+		vcard = new Get(queue, readConf(), dataStore);
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class GetTest extends IQTestHandler {
 	@Test
 	public void testNonExistingUserReturnsItemNotFound() throws Exception {
 		
-		Mockito.when(nodeStore.hasOwner(Mockito.any(JID.class))).thenReturn(false);
+		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(false);
 		
 		vcard.process(readStanzaAsIq("/vcard/get-jid-attribute"));
 

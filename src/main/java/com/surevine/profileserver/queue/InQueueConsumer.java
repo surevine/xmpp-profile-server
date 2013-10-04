@@ -7,9 +7,9 @@ import org.xmpp.packet.IQ;
 import org.xmpp.packet.Packet;
 
 import com.surevine.profileserver.Configuration;
-import com.surevine.profileserver.db.NodeStore;
-import com.surevine.profileserver.db.NodeStoreFactory;
-import com.surevine.profileserver.db.exception.NodeStoreException;
+import com.surevine.profileserver.db.DataStore;
+import com.surevine.profileserver.db.DataStoreFactory;
+import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.packetprocessor.iq.IQProcessor;
 
 public class InQueueConsumer extends QueueConsumer {
@@ -19,30 +19,30 @@ public class InQueueConsumer extends QueueConsumer {
 
 	private final BlockingQueue<Packet> outQueue;
 	private final Configuration conf;
-	private final NodeStoreFactory nodeStoreFactory;
+	private final DataStoreFactory dataStoreFactory;
 
 	public InQueueConsumer(BlockingQueue<Packet> outQueue, Configuration conf,
 			BlockingQueue<Packet> inQueue,
-			NodeStoreFactory nodeStoreFactory) {
+			DataStoreFactory dataStoreFactory) {
 		super(inQueue);
 		this.outQueue = outQueue;
 		this.conf = conf;
-		this.nodeStoreFactory = nodeStoreFactory;
+		this.dataStoreFactory = dataStoreFactory;
 	}
 
 	@Override
 	protected void consume(Packet p) {
-		NodeStore nodeStore = null;
+		DataStore dataStore = null;
 		try {
 			Long start = System.currentTimeMillis();
 
 			String xml = p.toXML();
 			logger.debug("Received payload: '" + xml + "'.");
 			
-			nodeStore = nodeStoreFactory.create();
+			dataStore = dataStoreFactory.create();
 			
 			if (p instanceof IQ) {
-				new IQProcessor(outQueue, conf, nodeStore).process((IQ) p);
+				new IQProcessor(outQueue, conf, dataStore).process((IQ) p);
 			}
 
 			logger.debug("Payload handled in '"
@@ -53,8 +53,8 @@ public class InQueueConsumer extends QueueConsumer {
 			logger.error("Exception: " + e.getMessage(), e);
 		} finally {
 			try {
-				nodeStore.close();
-			} catch (NodeStoreException e) {
+				dataStore.close();
+			} catch (DataStoreException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

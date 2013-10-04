@@ -19,11 +19,11 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import com.surevine.profileserver.db.NodeStore;
+import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.jdbc.DatabaseTester;
 import com.surevine.profileserver.db.jdbc.JDBCNodeStore;
 import com.surevine.profileserver.db.jdbc.JDBCNodeStore.NodeStoreSQLDialect;
-import com.surevine.profileserver.db.jdbc.dialect.Sql92NodeStoreDialect;
+import com.surevine.profileserver.db.jdbc.dialect.Sql92DataStoreDialect;
 import com.surevine.profileserver.helpers.IQTestHandler;
 
 @SuppressWarnings("serial")
@@ -45,7 +45,7 @@ public class TransactionTest {
 		dbTester.initialise();
 
 		store = new JDBCNodeStore(dbTester.getConnection(),
-				new Sql92NodeStoreDialect());
+				new Sql92DataStoreDialect());
 	}
 
 	@After
@@ -59,7 +59,7 @@ public class TransactionTest {
 		JDBCNodeStore store = new JDBCNodeStore(conn,
 				mock(NodeStoreSQLDialect.class));
 
-		NodeStore.Transaction t = store.beginTransaction();
+		DataStore.Transaction t = store.beginTransaction();
 
 		assertNotNull("Null transaction returned", t);
 
@@ -72,7 +72,7 @@ public class TransactionTest {
 		JDBCNodeStore store = new JDBCNodeStore(conn,
 				mock(NodeStoreSQLDialect.class));
 
-		NodeStore.Transaction t = store.beginTransaction();
+		DataStore.Transaction t = store.beginTransaction();
 		t.commit();
 
 		verify(conn).commit();
@@ -85,7 +85,7 @@ public class TransactionTest {
 		JDBCNodeStore store = new JDBCNodeStore(conn,
 				mock(NodeStoreSQLDialect.class));
 
-		NodeStore.Transaction t = store.beginTransaction();
+		DataStore.Transaction t = store.beginTransaction();
 		t.close();
 
 		verify(conn, never()).commit();
@@ -100,7 +100,7 @@ public class TransactionTest {
 		JDBCNodeStore store = new JDBCNodeStore(conn,
 				mock(NodeStoreSQLDialect.class));
 
-		NodeStore.Transaction t = store.beginTransaction();
+		DataStore.Transaction t = store.beginTransaction();
 		t.commit();
 
 		t.close();
@@ -135,9 +135,9 @@ public class TransactionTest {
 
 		InOrder inOrder = inOrder(conn);
 
-		NodeStore.Transaction t1 = store.beginTransaction();
-		NodeStore.Transaction t2 = store.beginTransaction();
-		NodeStore.Transaction t3 = store.beginTransaction();
+		DataStore.Transaction t1 = store.beginTransaction();
+		DataStore.Transaction t2 = store.beginTransaction();
+		DataStore.Transaction t3 = store.beginTransaction();
 
 		t3.commit();
 		verify(conn, never()).commit(); // Make sure that commit isn't called
@@ -161,9 +161,9 @@ public class TransactionTest {
 		JDBCNodeStore store = new JDBCNodeStore(conn,
 				mock(NodeStoreSQLDialect.class));
 
-		NodeStore.Transaction t1 = store.beginTransaction();
-		NodeStore.Transaction t2 = store.beginTransaction();
-		NodeStore.Transaction t3 = store.beginTransaction();
+		DataStore.Transaction t1 = store.beginTransaction();
+		DataStore.Transaction t2 = store.beginTransaction();
+		DataStore.Transaction t3 = store.beginTransaction();
 
 		t3.commit();
 		t2.close();
@@ -177,9 +177,9 @@ public class TransactionTest {
 		JDBCNodeStore store = new JDBCNodeStore(conn,
 				mock(NodeStoreSQLDialect.class));
 
-		NodeStore.Transaction t1 = store.beginTransaction();
-		NodeStore.Transaction t2 = store.beginTransaction();
-		NodeStore.Transaction t3 = store.beginTransaction();
+		DataStore.Transaction t1 = store.beginTransaction();
+		DataStore.Transaction t2 = store.beginTransaction();
+		DataStore.Transaction t3 = store.beginTransaction();
 
 		t3.commit();
 		t1.commit(); // t1 must not be committed before t2

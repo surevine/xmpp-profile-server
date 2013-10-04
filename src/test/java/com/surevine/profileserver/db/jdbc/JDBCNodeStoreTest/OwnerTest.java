@@ -22,11 +22,11 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.xmpp.packet.JID;
 
-import com.surevine.profileserver.db.NodeStore;
+import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.jdbc.DatabaseTester;
 import com.surevine.profileserver.db.jdbc.JDBCNodeStore;
 import com.surevine.profileserver.db.jdbc.JDBCNodeStore.NodeStoreSQLDialect;
-import com.surevine.profileserver.db.jdbc.dialect.Sql92NodeStoreDialect;
+import com.surevine.profileserver.db.jdbc.dialect.Sql92DataStoreDialect;
 import com.surevine.profileserver.helpers.IQTestHandler;
 
 @SuppressWarnings("serial")
@@ -48,7 +48,7 @@ public class OwnerTest {
 		dbTester.initialise();
 
 		store = new JDBCNodeStore(dbTester.getConnection(),
-				new Sql92NodeStoreDialect());
+				new Sql92DataStoreDialect());
 	}
 
 	@After

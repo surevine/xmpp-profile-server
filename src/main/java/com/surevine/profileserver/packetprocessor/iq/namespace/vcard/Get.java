@@ -9,8 +9,8 @@ import org.xmpp.packet.JID;
 import org.xmpp.packet.Packet;
 import org.xmpp.packet.PacketError;
 
-import com.surevine.profileserver.db.NodeStore;
-import com.surevine.profileserver.db.exception.NodeStoreException;
+import com.surevine.profileserver.db.DataStore;
+import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.packetprocessor.iq.NamespaceProcessorAbstract;
 
 public class Get extends NamespaceProcessorAbstract {
@@ -18,8 +18,8 @@ public class Get extends NamespaceProcessorAbstract {
 	private Element vcard;
 	
 	public Get(BlockingQueue<Packet> outQueue, Properties configuration,
-			NodeStore nodeStore) {
-		super(outQueue, configuration, nodeStore);
+			DataStore dataStore) {
+		super(outQueue, configuration, dataStore);
 	}
 
 	@Override
@@ -44,9 +44,9 @@ public class Get extends NamespaceProcessorAbstract {
 		
 	}
 
-	private void handleJidRequest() throws NodeStoreException {
+	private void handleJidRequest() throws DataStoreException {
 		JID user = new JID(vcard.attributeValue("jid"));
-		if (false == nodeStore.hasOwner(user)) {
+		if (false == dataStore.hasOwner(user)) {
 			setErrorCondition(PacketError.Type.cancel, PacketError.Condition.item_not_found);
 			return;
 		}

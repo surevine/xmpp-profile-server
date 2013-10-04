@@ -13,23 +13,23 @@ import org.xmpp.packet.JID;
 import org.xmpp.packet.Packet;
 import org.xmpp.packet.PacketError;
 
-import com.surevine.profileserver.db.NodeStore;
-import com.surevine.profileserver.db.exception.NodeStoreException;
+import com.surevine.profileserver.db.DataStore;
+import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.helpers.IQTestHandler;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
 
 public class SetTest extends IQTestHandler {
 
-	private NodeStore nodeStore;
+	private DataStore dataStore;
 	private Set register;
 	private LinkedBlockingQueue<Packet> queue;
 	private IQ request;
 
 	@Before
 	public void setUp() throws Exception {
-		nodeStore = Mockito.mock(NodeStore.class);
+		dataStore = Mockito.mock(DataStore.class);
 		queue = new LinkedBlockingQueue<Packet>();
-		register = new Set(queue, readConf(), nodeStore);
+		register = new Set(queue, readConf(), dataStore);
 		request = readStanzaAsIq("/register/request");
 	}
 
@@ -59,7 +59,7 @@ public class SetTest extends IQTestHandler {
 	@Test
 	public void testDataStoreExceptionCausesErrorResponsePacket()
 			throws Exception {
-		Mockito.doThrow(new NodeStoreException()).when(nodeStore)
+		Mockito.doThrow(new DataStoreException()).when(dataStore)
 				.addOwner(Mockito.any(JID.class));
 
 		register.process(request);

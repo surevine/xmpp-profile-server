@@ -10,9 +10,9 @@ import org.xmpp.component.ComponentManager;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.Packet;
 
-import com.surevine.profileserver.db.NodeStoreFactory;
-import com.surevine.profileserver.db.NodeStoreFactoryImpl;
-import com.surevine.profileserver.db.exception.NodeStoreException;
+import com.surevine.profileserver.db.DataStoreFactory;
+import com.surevine.profileserver.db.DataStoreFactoryImpl;
+import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.queue.InQueueConsumer;
 import com.surevine.profileserver.queue.OutQueueConsumer;
 
@@ -26,7 +26,7 @@ public class ProfileEngine implements Component {
 	private BlockingQueue<Packet> outQueue = new LinkedBlockingQueue<Packet>();
 	private BlockingQueue<Packet> inQueue = new LinkedBlockingQueue<Packet>();
 
-	private NodeStoreFactory nodeStoreFactory;
+	private DataStoreFactory dataStoreFactory;
 
 	private Configuration conf;
 
@@ -62,7 +62,7 @@ public class ProfileEngine implements Component {
 		OutQueueConsumer outQueueConsumer = new OutQueueConsumer(this, outQueue, conf);
 
 		InQueueConsumer inQueueConsumer = new InQueueConsumer(outQueue, conf,
-				inQueue, nodeStoreFactory);
+				inQueue, dataStoreFactory);
 
 		outQueueConsumer.start();
 		inQueueConsumer.start();
@@ -70,8 +70,8 @@ public class ProfileEngine implements Component {
 
 	private void setupManagers() throws ComponentException {
 		try {
-			nodeStoreFactory = new NodeStoreFactoryImpl(conf);
-		} catch (NodeStoreException e) {
+			dataStoreFactory = new DataStoreFactoryImpl(conf);
+		} catch (DataStoreException e) {
 			throw new ComponentException(e);
 		}
 	}

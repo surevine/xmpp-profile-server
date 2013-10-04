@@ -16,8 +16,8 @@ import org.xmpp.packet.Packet;
 import org.xmpp.packet.PacketError;
 
 import com.surevine.profileserver.Configuration;
-import com.surevine.profileserver.db.NodeStore;
-import com.surevine.profileserver.db.exception.NodeStoreException;
+import com.surevine.profileserver.db.DataStore;
+import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
 import com.surevine.profileserver.packetprocessor.iq.NamespaceProcessorAbstract;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
@@ -31,8 +31,8 @@ public class Set extends NamespaceProcessorAbstract {
 	private Map<String, String> conf;
 
 	public Set(BlockingQueue<Packet> outQueue, Properties configuration,
-			NodeStore nodeStore) {
-		super(outQueue, configuration, nodeStore);
+			DataStore dataStore) {
+		super(outQueue, configuration, dataStore);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class Set extends NamespaceProcessorAbstract {
 
 		try {
 			storeUser();
-		} catch (NodeStoreException e) {
+		} catch (DataStoreException e) {
 			logger.error(e);
 			setErrorCondition(PacketError.Type.wait,
 					PacketError.Condition.internal_server_error);
@@ -62,7 +62,7 @@ public class Set extends NamespaceProcessorAbstract {
 		outQueue.put(response);
 	}
 
-	private void storeUser() throws NodeStoreException {
-		nodeStore.addOwner(request.getFrom());
+	private void storeUser() throws DataStoreException {
+		dataStore.addOwner(request.getFrom());
 	}
 }

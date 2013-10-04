@@ -15,7 +15,7 @@ import org.xmpp.packet.Packet;
 import org.xmpp.packet.PacketError;
 
 import com.surevine.profileserver.Configuration;
-import com.surevine.profileserver.db.NodeStore;
+import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
 
@@ -24,16 +24,16 @@ public class Get implements PacketProcessor<IQ> {
 	public static final String ELEMENT_NAME = "query";
 	private static final Logger logger = Logger.getLogger(Get.class);
 	private final BlockingQueue<Packet> outQueue;
-	private final NodeStore nodeStore;
+	private final DataStore dataStore;
 	private String node;
 	private IQ result;
 	private IQ requestIq;
 	private Element query;
 	private Map<String, String> conf;
 
-	public Get(BlockingQueue<Packet> outQueue, NodeStore nodeStore) {
+	public Get(BlockingQueue<Packet> outQueue, DataStore dataStore) {
 		this.outQueue = outQueue;
-		this.nodeStore = nodeStore;
+		this.dataStore = dataStore;
 	}
 
 	@Override

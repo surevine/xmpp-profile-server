@@ -9,7 +9,7 @@ import org.xmpp.packet.IQ.Type;
 import org.xmpp.packet.Packet;
 import org.xmpp.packet.PacketError;
 
-import com.surevine.profileserver.db.NodeStore;
+import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
 
 public abstract class AbstractNamespace implements PacketProcessor<IQ> {
@@ -20,14 +20,14 @@ public abstract class AbstractNamespace implements PacketProcessor<IQ> {
 	private BlockingQueue<Packet> outQueue;
 	private Properties conf;
 
-	private NodeStore nodeStore;
+	private DataStore dataStore;
 
 	public AbstractNamespace(BlockingQueue<Packet> outQueue, Properties conf,
-			NodeStore nodeStore) {
+			DataStore dataStore) {
 		logger.trace("In " + this.getClass().getName());
 		this.outQueue = outQueue;
 		this.conf = conf;
-		this.nodeStore = nodeStore;
+		this.dataStore = dataStore;
 	}
 
 	protected abstract PacketProcessor<IQ> get();
@@ -80,8 +80,8 @@ public abstract class AbstractNamespace implements PacketProcessor<IQ> {
 		outQueue.put(reply);
 	}
 
-	protected NodeStore getNodeStore() {
-		return nodeStore;
+	protected DataStore getNodeStore() {
+		return dataStore;
 	}
 
 	protected BlockingQueue<Packet> getOutQueue() {
