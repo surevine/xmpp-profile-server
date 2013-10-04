@@ -1,0 +1,6 @@
+<iq type='set' id='1' to='profiles.shakespeare.lit'
+    from='romeo@shakespeare.lit/desktop'>
+  <query xmlns='jabber:iq:register'>
+    <remove/>
+  </query>
+ </iq>

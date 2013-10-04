@@ -23,20 +23,22 @@ public class SetTest extends IQTestHandler {
 	private DataStore dataStore;
 	private Set register;
 	private LinkedBlockingQueue<Packet> queue;
-	private IQ request;
+	private IQ registerRequest;
+	private IQ unregisterRequest;
 
 	@Before
 	public void setUp() throws Exception {
 		dataStore = Mockito.mock(DataStore.class);
 		queue = new LinkedBlockingQueue<Packet>();
 		register = new Set(queue, readConf(), dataStore);
-		request = readStanzaAsIq("/register/request");
+		registerRequest = readStanzaAsIq("/register/registerRequest");
+		unregisterRequest = readStanzaAsIq("/register/unregisterRequest");
 	}
 
 	@Test
 	public void testNonLocalUserCanNotRegister() throws Exception {
-		request.setFrom(new JID("not@from.here"));
-		register.process(request);
+		registerRequest.setFrom(new JID("not@from.here"));
+		register.process(registerRequest);
 
 		Assert.assertEquals(1, queue.size());
 
@@ -52,17 +54,17 @@ public class SetTest extends IQTestHandler {
 				error.getApplicationConditionName());
 		
 		Assert.assertEquals(IQ.Type.error, response.getType());
-		Assert.assertEquals(request.getFrom(), response.getTo());
-		Assert.assertEquals(request.getID(), response.getID());
+		Assert.assertEquals(registerRequest.getFrom(), response.getTo());
+		Assert.assertEquals(registerRequest.getID(), response.getID());
 	}
 
 	@Test
-	public void testDataStoreExceptionCausesErrorResponsePacket()
+	public void testDataStoreExceptionOnOwnerAddCausesErrorResponsePacket()
 			throws Exception {
 		Mockito.doThrow(new DataStoreException()).when(dataStore)
 				.addOwner(Mockito.any(JID.class));
 
-		register.process(request);
+		register.process(registerRequest);
 
 		Assert.assertEquals(1, queue.size());
 
@@ -76,13 +78,32 @@ public class SetTest extends IQTestHandler {
 				error.getCondition());
 		
 		Assert.assertEquals(IQ.Type.error, response.getType());
-		Assert.assertEquals(request.getFrom(), response.getTo());
-		Assert.assertEquals(request.getID(), response.getID());
+		Assert.assertEquals(registerRequest.getFrom(), response.getTo());
+		Assert.assertEquals(registerRequest.getID(), response.getID());
+	}
+	
+	@Test
+	public void testExistingOwnerGetsRegisteredResponse() throws Exception {
+		
+		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(true);
+		register.process(registerRequest);
+
+		Assert.assertEquals(1, queue.size());
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNull(error);
+		Assert.assertNotNull(response.getChildElement().element("registered"));
+		
+		Assert.assertEquals(IQ.Type.result, response.getType());
+		Assert.assertEquals(registerRequest.getFrom(), response.getTo());
+		Assert.assertEquals(registerRequest.getID(), response.getID());
 	}
 	
 	@Test 
 	public void testResultPacketSentOnSuccess() throws Exception {
-		register.process(request);
+		register.process(registerRequest);
 
 		Assert.assertEquals(1, queue.size());
 
@@ -92,8 +113,74 @@ public class SetTest extends IQTestHandler {
 		Assert.assertNull(error);
 		
 		Assert.assertEquals(IQ.Type.result, response.getType());
-		Assert.assertEquals(request.getFrom(), response.getTo());
-		Assert.assertEquals(request.getID(), response.getID());
+		Assert.assertEquals(registerRequest.getFrom(), response.getTo());
+		Assert.assertEquals(registerRequest.getID(), response.getID());
+	}
+	
+	@Test
+	public void testCanUnregister() throws Exception {
+		
+		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(true);
+		
+		register.process(unregisterRequest);
+
+		Assert.assertEquals(1, queue.size());
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNull(error);
+		
+		Assert.assertEquals(IQ.Type.result, response.getType());
+		Assert.assertEquals(registerRequest.getFrom(), response.getTo());
+		Assert.assertEquals(registerRequest.getID(), response.getID());
+	}
+	
+	@Test
+	public void testIfNotRegisteredReceiveRegistrationRequired() throws Exception {
+		
+		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(false);
+
+		register.process(unregisterRequest);
+
+		Assert.assertEquals(1, queue.size());
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.auth, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.registration_required,
+				error.getCondition());
+		
+		Assert.assertEquals(IQ.Type.error, response.getType());
+		Assert.assertEquals(registerRequest.getFrom(), response.getTo());
+		Assert.assertEquals(registerRequest.getID(), response.getID());
+	}
+	
+	@Test
+	public void testDataStoreExceptionOnOwnerCheckCausesErrorResponsePacket()
+			throws Exception {
+		Mockito.doThrow(new DataStoreException()).when(dataStore)
+				.hasOwner(Mockito.any(JID.class));
+
+		register.process(unregisterRequest);
+
+		Assert.assertEquals(1, queue.size());
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.wait, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.internal_server_error,
+				error.getCondition());
+		
+		Assert.assertEquals(IQ.Type.error, response.getType());
+		Assert.assertEquals(registerRequest.getFrom(), response.getTo());
+		Assert.assertEquals(registerRequest.getID(), response.getID());
 	}
 
 }

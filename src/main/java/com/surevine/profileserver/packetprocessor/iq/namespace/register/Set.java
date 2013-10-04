@@ -53,7 +53,11 @@ public class Set extends NamespaceProcessorAbstract {
 		}
 
 		try {
-			storeUser();
+			if (null != request.getChildElement().element("remove")) {
+				removeOwner();
+			} else {
+				storeOwner();
+			}
 		} catch (DataStoreException e) {
 			logger.error(e);
 			setErrorCondition(PacketError.Type.wait,
@@ -62,7 +66,22 @@ public class Set extends NamespaceProcessorAbstract {
 		outQueue.put(response);
 	}
 
-	private void storeUser() throws DataStoreException {
+	private void removeOwner() throws DataStoreException {
+		if (false == dataStore.hasOwner(request.getFrom())) {
+			setErrorCondition(PacketError.Type.auth,
+					PacketError.Condition.registration_required);
+			return;
+		}
+		dataStore.removeOwner(request.getFrom());
+
+	}
+
+	private void storeOwner() throws DataStoreException {
+		if (true == dataStore.hasOwner(request.getFrom())) {
+			response.getElement().addElement("query", Register.NAMESPACE_URI)
+			    .addElement("registered");
+			return;
+		}
 		dataStore.addOwner(request.getFrom());
 	}
 }
