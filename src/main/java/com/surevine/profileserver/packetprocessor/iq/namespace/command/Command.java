@@ -16,11 +16,15 @@ public class Command extends AbstractNamespace {
 	public static final String GET_USER_ROSTER = "http://jabber.org/protocol/admin#get-user-roster";
 	
 	public static final String FORM_TYPE = "http://jabber.org/protocol/admin";
+	
+	private final Result resultProcessor;
 
-	public Command(BlockingQueue<Packet> outQueue, Properties conf,
+	public Command(BlockingQueue<Packet> outQueue, Properties configuration,
 			DataStore dataStore) {
 
-		super(outQueue, conf, dataStore);
+		super(outQueue, configuration, dataStore);
+		
+		resultProcessor = new Result(outQueue, configuration, dataStore);
 	}
 
 	@Override
@@ -35,7 +39,7 @@ public class Command extends AbstractNamespace {
 
 	@Override
 	protected PacketProcessor<IQ> result() {
-		return null;
+		return resultProcessor;
 	}
 
 	@Override
