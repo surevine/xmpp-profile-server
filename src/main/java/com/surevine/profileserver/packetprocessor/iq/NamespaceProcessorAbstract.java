@@ -19,6 +19,7 @@ import org.xmpp.packet.PacketError.Type;
 import com.surevine.profileserver.Configuration;
 import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
+import com.surevine.profileserver.packetprocessor.iq.namespace.surevine.Surevine;
 
 public abstract class NamespaceProcessorAbstract
     implements PacketProcessor<IQ>
@@ -87,7 +88,7 @@ public abstract class NamespaceProcessorAbstract
 		Element standardError = new DOMElement(condition.toXMPP(),
 				new org.dom4j.Namespace("", NS_XMPP_STANZAS));
 		Element extraError = new DOMElement(additionalElement,
-				new org.dom4j.Namespace("", Configuration.NS_SUREVINE));
+				new org.dom4j.Namespace("", Surevine.NAMESPACE_URI));
 		Element error = new DOMElement("error");
 		error.addAttribute("type", type.toXMPP());
 		error.add(standardError);

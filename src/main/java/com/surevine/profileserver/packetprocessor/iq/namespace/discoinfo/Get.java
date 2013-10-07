@@ -14,10 +14,10 @@ import org.xmpp.packet.JID;
 import org.xmpp.packet.Packet;
 import org.xmpp.packet.PacketError;
 
-import com.surevine.profileserver.Configuration;
 import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
+import com.surevine.profileserver.packetprocessor.iq.namespace.surevine.Surevine;
 
 public class Get implements PacketProcessor<IQ> {
 
@@ -58,7 +58,7 @@ public class Get implements PacketProcessor<IQ> {
 		query.addElement("feature").addAttribute("var",
 				Register.NAMESPACE_URI);
 		query.addElement("feature").addAttribute("var",
-				Configuration.NS_SUREVINE);
+				Surevine.NAMESPACE_URI);
 		query.addElement("feature").addAttribute("var",
 				"urn:ietf:params:xml:ns:vcard-4.0");
 		outQueue.put(result);

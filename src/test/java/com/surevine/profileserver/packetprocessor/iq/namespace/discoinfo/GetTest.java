@@ -12,10 +12,10 @@ import org.mockito.Mockito;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.Packet;
 
-import com.surevine.profileserver.Configuration;
 import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.helpers.IQTestHandler;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
+import com.surevine.profileserver.packetprocessor.iq.namespace.surevine.Surevine;
 
 public class GetTest extends IQTestHandler {
 
@@ -84,7 +84,7 @@ public class GetTest extends IQTestHandler {
 				.attributeValue("var"));
 		Assert.assertEquals(Register.NAMESPACE_URI, features.get(1)
 				.attributeValue("var"));
-		Assert.assertEquals(Configuration.NS_SUREVINE, features.get(2)
+		Assert.assertEquals(Surevine.NAMESPACE_URI, features.get(2)
 				.attributeValue("var"));
 		Assert.assertEquals("urn:ietf:params:xml:ns:vcard-4.0", features.get(3)
 				.attributeValue("var"));

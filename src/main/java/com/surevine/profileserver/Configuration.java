@@ -23,8 +23,6 @@ public class Configuration extends Properties {
 	public static final String CONFIGURATION_SERVER_DOMAIN = "server.domain";
 	private static final String CONFIGURATION_FILE = "configuration.properties";
 	
-	public static final String NS_SUREVINE = "http://surevine.com/xmpp/profiles/1";
-	
 	private static Configuration instance = null;
 
 	private Properties conf;
