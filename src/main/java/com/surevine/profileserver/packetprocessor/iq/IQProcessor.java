@@ -13,6 +13,7 @@ import org.xmpp.packet.PacketError;
 import com.surevine.profileserver.Configuration;
 import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
+import com.surevine.profileserver.packetprocessor.iq.namespace.command.Command;
 import com.surevine.profileserver.packetprocessor.iq.namespace.discoinfo.DiscoInfo;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
 import com.surevine.profileserver.packetprocessor.iq.namespace.surevine.Surevine;
@@ -36,6 +37,8 @@ public class IQProcessor implements PacketProcessor<IQ> {
 		processorsPerNamespace.put(Register.NAMESPACE_URI, new Register(
 				outQueue, configuration, dataStore));
 		processorsPerNamespace.put(Surevine.NAMESPACE_URI, new Surevine(
+				outQueue, configuration, dataStore));
+		processorsPerNamespace.put(Command.NAMESPACE_URI, new Command(
 				outQueue, configuration, dataStore));
 	}
 

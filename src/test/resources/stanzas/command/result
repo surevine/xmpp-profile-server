@@ -1,0 +1,37 @@
+<iq from='shakespeare.lit'
+    id='get-user-roster-2'
+    to='bard@shakespeare.lit/globe'
+    type='result'
+    xml:lang='en'>
+  <command xmlns='http://jabber.org/protocol/commands' 
+           node='http://jabber.org/protocol/admin#get-user-roster'
+           sessionid='get-user-roster:20040408T0337Z'
+           status='completed'>
+    <x xmlns='jabber:x:data' type='result'>
+      <field type='hidden' var='FORM_TYPE'>
+        <value>http://jabber.org/protocol/admin</value>
+      </field>
+      <field var='accountjids'>
+        <value>juliet@shakespeare.lit</value>
+      </field>
+      <query xmlns='jabber:iq:roster'>
+        <item jid='romeo@example.net'
+              name='Romeo'
+              subscription='both'>
+          <group>Friends</group>
+          <group>Lovers</group>
+        </item>
+        <item jid='mercutio@example.org'
+              name='Mercutio'
+              subscription='from'>
+          <group>Friends</group>
+        </item>
+        <item jid='benvolio@example.org'
+              name='Benvolio'
+              subscription='both'>
+          <group>Friends</group>
+        </item>
+      </query>
+    </x>
+  </command>
+</iq>

@@ -16,6 +16,7 @@ public class Command extends AbstractNamespace {
 	public static final String GET_USER_ROSTER = "http://jabber.org/protocol/admin#get-user-roster";
 	
 	public static final String FORM_TYPE = "http://jabber.org/protocol/admin";
+	public static final String FORM_NAMESPACE = "jabber:x:data";
 	
 	private final Result resultProcessor;
 
