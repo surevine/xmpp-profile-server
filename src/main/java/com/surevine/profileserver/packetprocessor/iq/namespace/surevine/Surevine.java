@@ -13,11 +13,15 @@ import com.surevine.profileserver.packetprocessor.iq.namespace.AbstractNamespace
 public class Surevine extends AbstractNamespace {
 
 	public static final String NAMESPACE_URI = "http://surevine.com/xmpp/profiles/1";
+	
+	private final Set setProcessor;
 
 	public Surevine(BlockingQueue<Packet> outQueue, Properties configuration,
 			DataStore dataStore) {
 
 		super(outQueue, configuration, dataStore);
+		
+		setProcessor = new Set(outQueue, configuration, dataStore);
 	}
 
 	@Override
@@ -27,7 +31,7 @@ public class Surevine extends AbstractNamespace {
 
 	@Override
 	protected PacketProcessor<IQ> set() {
-		return new Set(outQueue, configuration, dataStore);
+		return setProcessor;
 	}
 
 	@Override
