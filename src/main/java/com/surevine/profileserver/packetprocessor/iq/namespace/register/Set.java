@@ -21,6 +21,7 @@ import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
 import com.surevine.profileserver.packetprocessor.iq.NamespaceProcessorAbstract;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
+import com.surevine.profileserver.packetprocessor.iq.namespace.surevine.Surevine;
 
 public class Set extends NamespaceProcessorAbstract {
 
@@ -76,12 +77,25 @@ public class Set extends NamespaceProcessorAbstract {
 
 	}
 
-	private void storeOwner() throws DataStoreException {
+	private void storeOwner() throws DataStoreException, InterruptedException {
 		if (true == dataStore.hasOwner(request.getFrom())) {
 			response.getElement().addElement("query", Register.NAMESPACE_URI)
 			    .addElement("registered");
 			return;
 		}
 		dataStore.addOwner(request.getFrom());
+		sendUpdateRequest();
+	}
+
+	private void sendUpdateRequest() throws InterruptedException {
+		IQ updateRequest = new IQ();
+		updateRequest.setType(IQ.Type.set);
+		updateRequest.setTo(request.getTo());
+		updateRequest.setFrom(request.getFrom());
+		updateRequest.setID(request.getID() + ":update");
+		
+		Element query = updateRequest.getElement().addElement("query", Surevine.NAMESPACE_URI);
+		query.addElement("update");
+		outQueue.put(updateRequest);
 	}
 }

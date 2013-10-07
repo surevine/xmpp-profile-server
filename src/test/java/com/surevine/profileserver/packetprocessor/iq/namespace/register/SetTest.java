@@ -5,6 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import junit.framework.Assert;
 
 import org.apache.bcel.generic.GETSTATIC;
+import org.dom4j.Element;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -17,6 +18,7 @@ import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.helpers.IQTestHandler;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
+import com.surevine.profileserver.packetprocessor.iq.namespace.surevine.Surevine;
 
 public class SetTest extends IQTestHandler {
 
@@ -105,8 +107,9 @@ public class SetTest extends IQTestHandler {
 	public void testResultPacketSentOnSuccess() throws Exception {
 		register.process(registerRequest);
 
-		Assert.assertEquals(1, queue.size());
+		Assert.assertEquals(2, queue.size());
 
+		queue.poll();
 		IQ response = (IQ) queue.poll();
 
 		PacketError error = response.getError();
@@ -115,6 +118,24 @@ public class SetTest extends IQTestHandler {
 		Assert.assertEquals(IQ.Type.result, response.getType());
 		Assert.assertEquals(registerRequest.getFrom(), response.getTo());
 		Assert.assertEquals(registerRequest.getID(), response.getID());
+	}
+	
+	@Test
+	public void testRosterUpdatePacketSentOnSuccessfulRegister() throws Exception {
+		register.process(registerRequest);
+
+		Assert.assertEquals(2, queue.size());
+
+		IQ response = (IQ) queue.poll();
+		
+		Assert.assertEquals(registerRequest.getFrom(), response.getFrom());
+		Assert.assertEquals(registerRequest.getTo(), response.getTo());
+		Assert.assertEquals(IQ.Type.set, response.getType());
+		Assert.assertEquals(registerRequest.getID() + ":update", response.getID());
+		
+		Element query = response.getElement().element("query");
+		Assert.assertEquals(Surevine.NAMESPACE_URI, query.getNamespaceURI());
+		Assert.assertNotNull(query.elementText("update"));
 	}
 	
 	@Test
