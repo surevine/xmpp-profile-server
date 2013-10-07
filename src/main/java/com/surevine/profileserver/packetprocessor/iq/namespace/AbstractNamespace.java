@@ -17,16 +17,16 @@ public abstract class AbstractNamespace implements PacketProcessor<IQ> {
 	private static final Logger logger = Logger
 			.getLogger(AbstractNamespace.class);
 
-	private BlockingQueue<Packet> outQueue;
-	private Properties conf;
+	protected BlockingQueue<Packet> outQueue;
+	protected Properties configuration;
 
-	private DataStore dataStore;
+	protected DataStore dataStore;
 
 	public AbstractNamespace(BlockingQueue<Packet> outQueue, Properties conf,
 			DataStore dataStore) {
 		logger.trace("In " + this.getClass().getName());
 		this.outQueue = outQueue;
-		this.conf = conf;
+		this.configuration = conf;
 		this.dataStore = dataStore;
 	}
 
@@ -89,6 +89,6 @@ public abstract class AbstractNamespace implements PacketProcessor<IQ> {
 	}
 
 	public Properties getConf() {
-		return conf;
+		return configuration;
 	}
 }

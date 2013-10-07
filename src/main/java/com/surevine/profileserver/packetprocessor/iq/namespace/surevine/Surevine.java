@@ -27,7 +27,7 @@ public class Surevine extends AbstractNamespace {
 
 	@Override
 	protected PacketProcessor<IQ> set() {
-		return null;
+		return new Set(outQueue, configuration, dataStore);
 	}
 
 	@Override
