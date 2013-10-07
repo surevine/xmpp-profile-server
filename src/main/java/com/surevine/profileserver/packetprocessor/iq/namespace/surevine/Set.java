@@ -1,7 +1,11 @@
 package com.surevine.profileserver.packetprocessor.iq.namespace.surevine;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 
@@ -20,6 +24,7 @@ import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
 import com.surevine.profileserver.packetprocessor.iq.NamespaceProcessorAbstract;
+import com.surevine.profileserver.packetprocessor.iq.namespace.command.Command;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
 
 public class Set extends NamespaceProcessorAbstract {
@@ -41,47 +46,65 @@ public class Set extends NamespaceProcessorAbstract {
 		request = reqIQ;
 		response = IQ.createResultIQ(reqIQ);
 
-		boolean isLocalUser = configuration.getProperty(
-				Configuration.CONFIGURATION_SERVER_DOMAIN).contains(
-				request.getFrom().getDomain());
-
-		if (false == isLocalUser) {
-			createExtendedErrorReply(PacketError.Type.cancel,
-					PacketError.Condition.not_allowed, "not-local-jid");
-			outQueue.put(response);
-			return;
+		if (null == request.getChildElement().element("update")) {
+			setErrorCondition(PacketError.Type.modify,
+					PacketError.Condition.bad_request);
+		} else {
+			handleUpdateRequest();
 		}
+		outQueue.put(response);
+	}
+
+	private void handleUpdateRequest() throws InterruptedException {
 
 		try {
-			if (null != request.getChildElement().element("remove")) {
-				removeOwner();
-			} else {
-				storeOwner();
+			if (false == dataStore.hasOwner(request.getFrom())) {
+				setErrorCondition(PacketError.Type.auth,
+						PacketError.Condition.registration_required);
+				return;
 			}
+			sendRosterRetrieval();
 		} catch (DataStoreException e) {
 			logger.error(e);
 			setErrorCondition(PacketError.Type.wait,
 					PacketError.Condition.internal_server_error);
 		}
-		outQueue.put(response);
 	}
 
-	private void removeOwner() throws DataStoreException {
-		if (false == dataStore.hasOwner(request.getFrom())) {
-			setErrorCondition(PacketError.Type.auth,
-					PacketError.Condition.registration_required);
-			return;
-		}
-		dataStore.removeOwner(request.getFrom());
+	private void sendRosterRetrieval() throws InterruptedException {
+		IQ rosterRequest = getRosterRequestIq();
+        Element command = rosterRequest.getElement().addElement("command", Command.NAMESPACE_URI);
+        command.addAttribute("node", Command.GET_USER_ROSTER);
+        command.addAttribute("sessionid",  getSessionId());
+        
+        DataForm x = new DataForm(DataForm.Type.submit);
+        
+        FormField formType = x.addField("FORM_TYPE", null, FormField.Type.hidden);
+        formType.addValue(Command.FORM_TYPE);
+        
+        FormField jid = x.addField("accountjids", null, null);
+        jid.addValue(request.getFrom().toBareJID().toString()); 
+
+        command.add(x.getElement());
+		outQueue.put(rosterRequest);
 
 	}
 
-	private void storeOwner() throws DataStoreException {
-		if (true == dataStore.hasOwner(request.getFrom())) {
-			response.getElement().addElement("query", Register.NAMESPACE_URI)
-			    .addElement("registered");
-			return;
-		}
-		dataStore.addOwner(request.getFrom());
+	private IQ getRosterRequestIq() {
+		IQ iq = new IQ();
+		iq.setFrom(configuration
+				.getProperty(Configuration.CONFIGURATION_SERVER_DOMAIN));
+		iq.setTo(request.getFrom().getDomain());
+		iq.setID(request.getID() + "-roster");
+		iq.setType(IQ.Type.set);
+		return iq;
+	}
+
+	private String getSessionId() {
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+		df.setTimeZone(tz);
+		String date = df.format(new Date());
+		return "roster:" + date;
 	}
 }

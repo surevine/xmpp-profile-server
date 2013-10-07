@@ -1,0 +1,6 @@
+<iq type='set' id='1' to='profiles.shakespeare.lit'
+    from='romeo@shakespeare.lit/desktop'>
+  <query xmlns='http://surevine.com/xmpp/profiles/'>
+    <update/>
+  </query>
+ </iq>
