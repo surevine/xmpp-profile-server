@@ -26,80 +26,88 @@ public class ResultTest extends IQTestHandler {
 	@Before
 	public void setUp() throws Exception {
 		dataStore = Mockito.mock(DataStore.class);
-		
+
 		queue = new LinkedBlockingQueue<Packet>();
 		result = new Result(queue, readConf(), dataStore);
 		resultRequest = readStanzaAsIq("/command/result");
 	}
-	
+
 	@Test
 	public void testIncorrectFromValueDoesNothing() throws Exception {
 		resultRequest.setFrom(new JID("not.from.here"));
-		
+
 		result.process(resultRequest);
-		
-		Mockito.verify(dataStore, Mockito.never()).hasOwner(Mockito.any(JID.class));
+
+		Mockito.verify(dataStore, Mockito.never()).hasOwner(
+				Mockito.any(JID.class));
 	}
-	
+
 	@Test
 	public void testIncorrectNodeDoesNothing() throws Exception {
-		
+
 		Element command = resultRequest.getElement().element("command");
 		command.remove(command.element("x"));
 		command.addAttribute("node", "http://incorrect.node");
-		
+
 		result.process(resultRequest);
-		
-		Mockito.verify(dataStore, Mockito.never()).hasOwner(Mockito.any(JID.class));
+
+		Mockito.verify(dataStore, Mockito.never()).hasOwner(
+				Mockito.any(JID.class));
 	}
-	
+
 	@Test
 	public void testNotCompletedStatusDoesNothing() throws Exception {
 		Element command = resultRequest.getElement().element("command");
 		command.addAttribute("status", "pending");
-		
+
 		result.process(resultRequest);
-		
-		Mockito.verify(dataStore, Mockito.never()).hasOwner(Mockito.any(JID.class));
+
+		Mockito.verify(dataStore, Mockito.never()).hasOwner(
+				Mockito.any(JID.class));
 	}
-	
+
 	@Test
 	public void testMissingFormElementDoesNothing() throws Exception {
 		Element command = resultRequest.getElement().element("command");
 		command.remove(command.element("x"));
-		
+
 		result.process(resultRequest);
-		
-		Mockito.verify(dataStore, Mockito.never()).hasOwner(Mockito.any(JID.class));
+
+		Mockito.verify(dataStore, Mockito.never()).hasOwner(
+				Mockito.any(JID.class));
 	}
-	
+
 	@Test
 	public void testIncorrectFormTypeDoesNothing() throws Exception {
-		Element form = resultRequest.getElement().element("command").element("x");
+		Element form = resultRequest.getElement().element("command")
+				.element("x");
 		List<Element> elements = (List<Element>) form.elements("field");
-		for( Element f : elements ) {
-			if ( f.attributeValue("var").equals("FORM_TYPE") ) {
+		for (Element f : elements) {
+			if (f.attributeValue("var").equals("FORM_TYPE")) {
 				f.element("value").setText("http://wrong/protocol");
 			}
 		}
-		
+
 		result.process(resultRequest);
-		
-		Mockito.verify(dataStore, Mockito.never()).hasOwner(Mockito.any(JID.class));
+
+		Mockito.verify(dataStore, Mockito.never()).hasOwner(
+				Mockito.any(JID.class));
 	}
-	
+
 	@Test
 	public void testIncorrectAccountJidsValueChecksOnce() throws Exception {
-		Element form = resultRequest.getElement().element("command").element("x");
+		Element form = resultRequest.getElement().element("command")
+				.element("x");
 		List<Element> elements = (List<Element>) form.elements("field");
-		for( Element f : elements ) {
-			if ( f.attributeValue("var").equals("accountjids") ) {
+		for (Element f : elements) {
+			if (f.attributeValue("var").equals("accountjids")) {
 				f.element("value").setText("someone@not-from.here");
 			}
 		}
-		
+
 		result.process(resultRequest);
-		
-		Mockito.verify(dataStore, Mockito.times(1)).hasOwner(Mockito.any(JID.class));
+
+		Mockito.verify(dataStore, Mockito.times(1)).hasOwner(
+				Mockito.any(JID.class));
 	}
 }
