@@ -38,15 +38,6 @@ public interface DataStore {
      * @throws DataStoreException 
      */
 	void removeOwner(JID ownerJid) throws DataStoreException;
-
-
-	/**
-	 * Add a JID to an owner's roster group with the given name
-	 * @param owner
-	 * @param group
-	 * @param jid
-	 */
-	void addRosterMember(JID owner, String group, JID jid);
 	
     /**
      * Add a roster entry for an owner
