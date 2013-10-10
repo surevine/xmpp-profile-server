@@ -108,7 +108,7 @@ public class Result extends NamespaceProcessorAbstract {
 		return true;
 	}
 
-	private void parseForm() {
+	private void parseForm() throws DataStoreException {
 		List<Element> items = x.element("query").elements("item");
 
 		JID jid;
@@ -117,7 +117,7 @@ public class Result extends NamespaceProcessorAbstract {
 			jid = new JID(item.attributeValue("jid"));
 			for (Element group : (List<Element>) item.elements("group")) {
 				groupName = group.getText();
-				dataStore.addRosterMember(owner, groupName, jid);
+				dataStore.addRosterEntry(owner, jid, groupName);
 			}
 		}
 	}
