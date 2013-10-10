@@ -109,7 +109,7 @@ public class JDBCDataStore implements DataStore {
 			java.sql.ResultSet rs = getStatement.executeQuery();
 			boolean exists = rs.next();
 			if (!exists) return null;
-			String group = rs.getString(0);
+			String group = rs.getString(1);
             rs.close();
             return group;
 		} catch (SQLException e) {
@@ -126,10 +126,9 @@ public class JDBCDataStore implements DataStore {
 			getStatement = conn.prepareStatement(dialect.getRosterGroups());
 			getStatement.setString(1, owner.toBareJID());
 			java.sql.ResultSet rs = getStatement.executeQuery();
-			boolean exists = rs.next();
 			ArrayList<String> groups = new ArrayList<String>();
 			while (rs.next()) {
-				groups.add(rs.getString(0));
+				groups.add(rs.getString(1));
 			}
             rs.close();
             return groups;
@@ -146,9 +145,10 @@ public class JDBCDataStore implements DataStore {
 		try {
 			addStatement = conn.prepareStatement(dialect.addRosterEntry());
 			addStatement.setString(1, owner.toBareJID());
-			addStatement.setString(2, user.toBareJID());
-			addStatement.setString(3, group);
-			addStatement.executeQuery();
+			addStatement.setString(2, group);
+			addStatement.setString(3, user.toBareJID());
+			addStatement.executeUpdate();
+			addStatement.close();
 		} catch (SQLException e) {
 			throw new DataStoreException(e);
 		} finally {

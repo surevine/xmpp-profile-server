@@ -8,7 +8,7 @@ public class Sql92DataStoreDialect implements DataStoreSQLDialect {
 	
 	private static final String DELETE_OWNER = "DELETE FROM owners where \"owner\" = ?;";
 
-	private static final String ADD_OWNER = "INSERT INTO owners VALUES(?, NOW());";
+	private static final String ADD_OWNER = "INSERT INTO owners VALUES (?, NOW());";
 	
 	private static final String CLEAR_ROSTER_ITEMS = "DELETE FROM roster WHERE \"owner\" = ?;";
 	
