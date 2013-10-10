@@ -98,6 +98,78 @@ public class JDBCDataStore implements DataStore {
 			close(deleteStatement);
 		}
 	}
+    
+    @Override
+    public String getRosterGroup(JID owner, JID user) throws DataStoreException {
+		PreparedStatement getStatement = null;
+		try {
+			getStatement = conn.prepareStatement(dialect.getRosterGroup());
+			getStatement.setString(1, owner.toBareJID());
+			getStatement.setString(2, user.toBareJID());
+			java.sql.ResultSet rs = getStatement.executeQuery();
+			boolean exists = rs.next();
+			if (!exists) return null;
+			String group = rs.getString(0);
+            rs.close();
+            return group;
+		} catch (SQLException e) {
+			throw new DataStoreException(e);
+		} finally {
+			close(getStatement);
+		}
+    }
+    
+    @Override
+    public ArrayList<String> getRosterGroups(JID owner) throws DataStoreException {
+		PreparedStatement getStatement = null;
+		try {
+			getStatement = conn.prepareStatement(dialect.getRosterGroups());
+			getStatement.setString(1, owner.toBareJID());
+			java.sql.ResultSet rs = getStatement.executeQuery();
+			boolean exists = rs.next();
+			ArrayList<String> groups = new ArrayList<String>();
+			while (rs.next()) {
+				groups.add(rs.getString(0));
+			}
+            rs.close();
+            return groups;
+		} catch (SQLException e) {
+			throw new DataStoreException(e);
+		} finally {
+			close(getStatement);
+		}
+    }
+    
+    @Override
+    public void addRosterEntry(JID owner, JID user, String group) throws DataStoreException {
+		PreparedStatement addStatement = null;
+		try {
+			addStatement = conn.prepareStatement(dialect.addRosterEntry());
+			addStatement.setString(1, owner.toBareJID());
+			addStatement.setString(2, user.toBareJID());
+			addStatement.setString(3, group);
+			addStatement.executeQuery();
+		} catch (SQLException e) {
+			throw new DataStoreException(e);
+		} finally {
+			close(addStatement);
+		}
+    }
+    
+	@Override
+	public void clearRoster(JID owner) throws DataStoreException {
+		PreparedStatement deleteStatement = null;
+		try {
+			deleteStatement = conn.prepareStatement(dialect.clearRoster());
+			deleteStatement.setString(1, owner.toBareJID());
+			deleteStatement.execute();
+			deleteStatement.close();
+		} catch (SQLException e) {
+			throw new DataStoreException(e);
+		} finally {
+			close(deleteStatement);
+		}
+	}
 	
 	@Override
 	public Transaction beginTransaction() throws DataStoreException {
@@ -226,6 +298,14 @@ public class JDBCDataStore implements DataStore {
 		String deleteOwner();
 
 		String addOwner();
+
+		String clearRoster();
+
+		String getRosterGroups();
+
+		String addRosterEntry();
+
+		String getRosterGroup();
 
 	}
 }

@@ -36,6 +36,44 @@ public interface DataStore {
      */
 	void removeOwner(JID ownerJid) throws DataStoreException;
 	
+    /**
+     * Add a roster entry for an owner
+     * 
+     * @param owner
+     * @param user
+     * @param group
+     * @throws DataStoreException
+     */
+	void addRosterEntry(JID owner, JID user, String group)
+			throws DataStoreException;
+	
+    /**
+     * Get the roster group for an owner
+     *
+     * @param owner
+     * @param user
+     * @return
+     * @throws DataStoreException
+     */
+	String getRosterGroup(JID owner, JID user) throws DataStoreException;
+
+	/**
+	 * Get a list of roster groups for an owner
+	 * 
+	 * @param owner
+	 * @return
+	 * @throws DataStoreException
+	 */
+	ArrayList<String> getRosterGroups(JID owner) throws DataStoreException;
+	
+    /**
+     * Clear an owner's roster from the system
+     * 
+     * @param owner
+     * @throws DataStoreException
+     */
+	void clearRoster(JID owner) throws DataStoreException;
+	
 	/**
 	 * Closes this node store instance and releases any resources.
 	 */
