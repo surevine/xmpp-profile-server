@@ -3,6 +3,8 @@ xmpp-profile-server
 
 Deliver different vCard4s to users based on their existance in a user's roster group (or lack of existance).
 
+Please see the [Wiki](https://github.com/surevine/xmpp-profile-server/wiki) for more information.
+
 ## Build status
 
 [![Build Status](https://travis-ci.org/surevine/xmpp-profile-server.png?branch=master)](https://travis-ci.org/surevine/xmpp-profile-server)
