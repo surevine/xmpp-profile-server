@@ -122,9 +122,9 @@ public class ResultTest extends IQTestHandler {
 		result.process(resultRequest);
 
 		Mockito.verify(dataStore, Mockito.times(1)).hasOwner(Mockito.any(JID.class));
-		Mockito.verify(dataStore, Mockito.times(4)).addRosterMember(
-				Mockito.any(JID.class), 
-				Mockito.any(String.class),
-				Mockito.any(JID.class));
+		Mockito.verify(dataStore, Mockito.times(4)).addRosterEntry(
+				Mockito.any(JID.class),
+				Mockito.any(JID.class),
+				Mockito.any(String.class));
 	}
 }
