@@ -5,8 +5,6 @@ Deliver different vCard4s to users based on their existance in a user's roster g
 
 ## Build status
 
-Note this points to the main buddycloud repository for the java server.
-
 [![Build Status](https://travis-ci.org/surevine/xmpp-profile-server.png?branch=master)](https://travis-ci.org/surevine/xmpp-profile-server)
 
 ## Discuss
