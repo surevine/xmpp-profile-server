@@ -1,5 +1,7 @@
 package com.surevine.profileserver.packetprocessor.iq.namespace.command;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -34,6 +36,8 @@ public class Result extends NamespaceProcessorAbstract {
 	private Map<String, String> conf;
 	private Element command;
 	private Element x;
+	private HashMap<String, ArrayList<JID>> roster;
+	private JID owner;
 
 	public Result(BlockingQueue<Packet> outQueue, Properties configuration,
 			DataStore dataStore) {
@@ -63,7 +67,9 @@ public class Result extends NamespaceProcessorAbstract {
 		}
 
 		x = command.element("x");
-		if (null == x || false == x.getNamespace().getText().equals(Command.FORM_NAMESPACE)) {
+		if (null == x
+				|| false == x.getNamespace().getText()
+						.equals(Command.FORM_NAMESPACE)) {
 			return;
 		}
 
@@ -74,6 +80,9 @@ public class Result extends NamespaceProcessorAbstract {
 		if (!validateForm()) {
 			return;
 		}
+
+		// extract & write form
+		parseForm();
 	}
 
 	private boolean validateForm() throws DataStoreException {
@@ -89,8 +98,8 @@ public class Result extends NamespaceProcessorAbstract {
 					return false;
 				}
 			} else if (var.equals("accountjids")) {
-				JID user = new JID(field.elementText("value"));
-				if (false == dataStore.hasOwner(user)) {
+				owner = new JID(field.elementText("value"));
+				if (false == dataStore.hasOwner(owner)) {
 					return false;
 				}
 			}
@@ -99,4 +108,17 @@ public class Result extends NamespaceProcessorAbstract {
 		return true;
 	}
 
+	private void parseForm() {
+		List<Element> items = x.element("query").elements("item");
+
+		JID jid;
+		String groupName;
+		for (Element item : items) {
+			jid = new JID(item.attributeValue("jid"));
+			for (Element group : (List<Element>) item.elements("group")) {
+				groupName = group.getText();
+				dataStore.addRosterMember(owner, groupName, jid);
+			}
+		}
+	}
 }

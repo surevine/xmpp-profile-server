@@ -2,10 +2,13 @@ package com.surevine.profileserver.db;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import com.surevine.profileserver.db.exception.DataStoreException;
+
+import org.dom4j.Element;
 import org.xmpp.packet.JID;
 import org.xmpp.resultsetmanagement.ResultSet;
 
@@ -35,6 +38,15 @@ public interface DataStore {
      * @throws DataStoreException 
      */
 	void removeOwner(JID ownerJid) throws DataStoreException;
+
+
+	/**
+	 * Add a JID to an owner's roster group with the given name
+	 * @param owner
+	 * @param group
+	 * @param jid
+	 */
+	void addRosterMember(JID owner, String group, JID jid);
 	
 	/**
 	 * Closes this node store instance and releases any resources.

@@ -98,6 +98,12 @@ public class JDBCDataStore implements DataStore {
 			close(deleteStatement);
 		}
 	}
+
+	@Override
+	public void addRosterMember(JID owner, String group, JID jid) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	@Override
 	public Transaction beginTransaction() throws DataStoreException {

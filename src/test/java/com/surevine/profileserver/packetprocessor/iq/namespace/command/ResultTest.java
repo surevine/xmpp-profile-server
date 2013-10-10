@@ -1,7 +1,11 @@
 package com.surevine.profileserver.packetprocessor.iq.namespace.command;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import junit.framework.Assert;
 
 import org.dom4j.Element;
 import org.junit.Before;
@@ -101,5 +105,18 @@ public class ResultTest extends IQTestHandler {
 		result.process(resultRequest);
 		
 		Mockito.verify(dataStore, Mockito.times(1)).hasOwner(Mockito.any(JID.class));
+	}
+	
+	@Test
+	public void testWriteActionCalled() throws Exception {
+		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(true);
+		
+		result.process(resultRequest);
+
+		Mockito.verify(dataStore, Mockito.times(1)).hasOwner(Mockito.any(JID.class));
+		Mockito.verify(dataStore, Mockito.times(4)).addRosterMember(
+				Mockito.any(JID.class), 
+				Mockito.any(String.class),
+				Mockito.any(JID.class));
 	}
 }
