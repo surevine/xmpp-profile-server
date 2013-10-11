@@ -58,7 +58,7 @@ public interface DataStore {
      * @return
      * @throws DataStoreException
      */
-	String getRosterGroup(JID owner, JID user) throws DataStoreException;
+	ArrayList<String> getRosterGroupsForUser(JID owner, JID user) throws DataStoreException;
 
 	/**
 	 * Get a list of roster groups for an owner

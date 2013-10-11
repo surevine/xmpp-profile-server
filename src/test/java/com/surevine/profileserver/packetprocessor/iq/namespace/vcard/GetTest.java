@@ -1,5 +1,6 @@
 package com.surevine.profileserver.packetprocessor.iq.namespace.vcard;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -15,6 +16,7 @@ import org.xmpp.packet.Packet;
 import org.xmpp.packet.PacketError;
 
 import com.surevine.profileserver.db.DataStore;
+import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.helpers.IQTestHandler;
 
 public class GetTest extends IQTestHandler {

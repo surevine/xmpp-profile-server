@@ -28,28 +28,35 @@ public class Get extends NamespaceProcessorAbstract {
 		response = IQ.createResultIQ(packet);
 		vcard = packet.getElement().element("vcard");
 
-		if (null != vcard.attributeValue("jid")) {
-			handleJidRequest();
-		} else if (null != vcard.attributeValue("id")) {
-			handleIdRequest();
-		} else {
-			createExtendedErrorReply(PacketError.Type.modify,
-					PacketError.Condition.bad_request, "jid-or-id-required");
+		try {
+			if (null != vcard.attributeValue("jid")) {
+				handleJidRequest();
+			} else {
+				createExtendedErrorReply(PacketError.Type.modify,
+						PacketError.Condition.bad_request, "jid-required");
+			}
+		} catch (DataStoreException e) {
+			logger.error(e);
+			setErrorCondition(PacketError.Type.wait, PacketError.Condition.internal_server_error);
 		}
 		outQueue.put(response);
 	}
-
-	private void handleIdRequest() {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
 	private void handleJidRequest() throws DataStoreException {
-		JID user = new JID(vcard.attributeValue("jid"));
-		if (false == dataStore.hasOwner(user)) {
+		JID owner = new JID(vcard.attributeValue("jid"));
+		if (false == dataStore.hasOwner(owner)) {
 			setErrorCondition(PacketError.Type.cancel, PacketError.Condition.item_not_found);
 			return;
 		}
+		ArrayList<String> groups = dataStore.getRosterGroupsForUser(owner, request.getFrom());
+		if (0 == groups.size()) {
+			sendPublicVcard();
+			return;
+		}
+	}
+
+	private void sendPublicVcard() {
+		// TODO Auto-generated method stub
 		
 	}
 

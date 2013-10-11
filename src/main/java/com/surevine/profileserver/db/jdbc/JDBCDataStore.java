@@ -100,18 +100,19 @@ public class JDBCDataStore implements DataStore {
 	}
     
     @Override
-    public String getRosterGroup(JID owner, JID user) throws DataStoreException {
+    public ArrayList<String> getRosterGroupsForUser(JID owner, JID user) throws DataStoreException {
 		PreparedStatement getStatement = null;
 		try {
 			getStatement = conn.prepareStatement(dialect.getRosterGroup());
 			getStatement.setString(1, owner.toBareJID());
 			getStatement.setString(2, user.toBareJID());
 			java.sql.ResultSet rs = getStatement.executeQuery();
-			boolean exists = rs.next();
-			if (!exists) return null;
-			String group = rs.getString(1);
+			ArrayList<String> groups = new ArrayList<String>();
+			while (rs.next()) {
+				groups.add(rs.getString(1));
+			}
             rs.close();
-            return group;
+            return groups;
 		} catch (SQLException e) {
 			throw new DataStoreException(e);
 		} finally {
@@ -120,7 +121,7 @@ public class JDBCDataStore implements DataStore {
     }
     
     @Override
-    public ArrayList<String> getRosterGroups(JID owner) throws DataStoreException {
+    public ArrayList<String> getOwnerRosterGroupList(JID owner) throws DataStoreException {
 		PreparedStatement getStatement = null;
 		try {
 			getStatement = conn.prepareStatement(dialect.getRosterGroups());

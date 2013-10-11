@@ -51,36 +51,47 @@ public class RosterTest {
 	public void testCanAddRosterItem() throws Exception {
 		dbTester.loadData("basic-data");
 		store.addRosterEntry(ownerJid, userJid, group);
-		Assert.assertEquals(group, store.getRosterGroup(ownerJid, userJid));
+		Assert.assertEquals(group, store.getRosterGroupsForUser(ownerJid, userJid).get(0));
 	}
 
 	@Test
 	public void testCanGetRosterGroup() throws Exception {
 		dbTester.loadData("basic-data");
 		Assert.assertEquals("family",
-				store.getRosterGroup(ownerJid, new JID("mum@example.com/home")));
+				store.getRosterGroupsForUser(ownerJid, new JID("mum@example.com/home")).get(0));
 	}
 	
 	@Test
-	public void testNoEntryReturnsNull() throws Exception {
+	public void testNoEntryReturnsEmptyResults() throws Exception {
 		dbTester.loadData("basic-data");
-		Assert.assertNull(store.getRosterGroup(ownerJid, userJid));
+		Assert.assertEquals(0, store.getRosterGroupsForUser(ownerJid, userJid).size());
+	}
+	
+	@Test
+	public void testMultipleRosterGroupsAreReflectedInResults() throws Exception {
+		dbTester.loadData("basic-data");
+		
+		ArrayList<String> groups = store.getRosterGroupsForUser(ownerJid, new JID("boss@company.org"));
+		Assert.assertEquals(2, groups.size());
+		Assert.assertEquals("colleagues", groups.get(0));
+		Assert.assertEquals("people-i-dont-like", groups.get(1));
 	}
 	
 	@Test
 	public void testCanGetRosterGroups() throws Exception {
 		dbTester.loadData("basic-data");
-		ArrayList<String> groups = store.getRosterGroups(ownerJid);
-		Assert.assertEquals(2, groups.size());
+		ArrayList<String> groups = store.getOwnerRosterGroupList(ownerJid);
+		Assert.assertEquals(3, groups.size());
 		Assert.assertEquals("colleagues", groups.get(0));
 		Assert.assertEquals("family", groups.get(1));
+		Assert.assertEquals("people-i-dont-like", groups.get(2));
 	}
 
 	@Test
 	public void testCanClearRoster() throws Exception {
 		dbTester.loadData("basic-data");
 		store.clearRoster(ownerJid);
-		Assert.assertEquals(0, store.getRosterGroups(ownerJid).size());
+		Assert.assertEquals(0, store.getOwnerRosterGroupList(ownerJid).size());
 	}
 
 }
