@@ -101,9 +101,10 @@ public class GetTest extends IQTestHandler {
 	public void testUserNotInRosterReceivesPublicVcard() throws Exception {
 
 		Mockito.when(
-				dataStore.getRosterGroupsForUser(Mockito.any(JID.class),
-						Mockito.any(JID.class))).thenReturn(new ArrayList<String>());
-		Mockito.when(dataStore.getPublicVcard(Mockito.any(JID.class))).thenReturn(null);
+				dataStore.getVcardForUser(Mockito.any(JID.class),
+						Mockito.any(JID.class))).thenReturn(null);
+		Mockito.when(dataStore.getPublicVcard(Mockito.any(JID.class)))
+				.thenReturn(readStanzaAsString("/vcard/public-vcard"));
 		vcard.process(readStanzaAsIq("/vcard/get-jid-attribute"));
 
 		Assert.assertEquals(1, queue.size());
@@ -113,17 +114,82 @@ public class GetTest extends IQTestHandler {
 		PacketError error = response.getError();
 		Assert.assertNull(error);
 
+		Element vcard = response.getElement().element("vcard");
+		Assert.assertNotNull(vcard);
+		Assert.assertEquals(VCard.NAMESPACE_URI, vcard.getNamespaceURI());
+		Assert.assertEquals("public",
+				vcard.element("n").elementText("additional"));
 	}
 
 	@Test
 	public void testNoPublicVcardResultsInEmptyResponse() throws Exception {
+		Mockito.when(
+				dataStore.getVcardForUser(Mockito.any(JID.class),
+						Mockito.any(JID.class))).thenReturn(null);
+		Mockito.when(dataStore.getPublicVcard(Mockito.any(JID.class)))
+				.thenReturn(null);
+		vcard.process(readStanzaAsIq("/vcard/get-jid-attribute"));
 
+		Assert.assertEquals(1, queue.size());
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNull(error);
+
+		Element vcard = response.getElement().element("vcard");
+		Assert.assertNotNull(vcard);
+		Assert.assertEquals(VCard.NAMESPACE_URI, vcard.getNamespaceURI());
+		Assert.assertEquals(0, vcard.elements().size());
+	}
+
+	@Test
+	public void testXmlParseExceptionReturnsInternalServerError()
+			throws Exception {
+		Mockito.when(
+				dataStore.getRosterGroupsForUser(Mockito.any(JID.class),
+						Mockito.any(JID.class))).thenReturn(
+				new ArrayList<String>());
+		Mockito.when(dataStore.getPublicVcard(Mockito.any(JID.class)))
+				.thenReturn("<invalid><xml>");
+		vcard.process(readStanzaAsIq("/vcard/get-jid-attribute"));
+
+		Assert.assertEquals(1, queue.size());
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+
+		Assert.assertEquals(PacketError.Type.wait, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.internal_server_error,
+				error.getCondition());
 	}
 
 	@Test
 	public void testUserInRosterGroupWithNoMapReceivesPublicVcard()
 			throws Exception {
 
+		Mockito.when(
+				dataStore.getVcardForUser(Mockito.any(JID.class),
+						Mockito.any(JID.class))).thenReturn(null);
+		Mockito.when(dataStore.getPublicVcard(Mockito.any(JID.class)))
+				.thenReturn(readStanzaAsString("/vcard/public-vcard"));
+		vcard.process(readStanzaAsIq("/vcard/get-jid-attribute"));
+
+		Assert.assertEquals(1, queue.size());
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNull(error);
+
+		Element vcard = response.getElement().element("vcard");
+		Assert.assertNotNull(vcard);
+		Assert.assertEquals(VCard.NAMESPACE_URI, vcard.getNamespaceURI());
+		Assert.assertEquals("public",
+				vcard.element("n").elementText("additional"));
 	}
 
 	@Test
@@ -131,10 +197,10 @@ public class GetTest extends IQTestHandler {
 			throws Exception {
 
 	}
-	
-	@Test 
+
+	@Test
 	public void testUserGetsHighestPriorityVcard() throws Exception {
-		
+
 	}
 
 }

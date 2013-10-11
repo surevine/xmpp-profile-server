@@ -80,10 +80,11 @@ public class RosterTest {
 	public void testCanGetRosterGroups() throws Exception {
 		dbTester.loadData("basic-data");
 		ArrayList<String> groups = store.getOwnerRosterGroupList(ownerJid);
-		Assert.assertEquals(3, groups.size());
+		Assert.assertEquals(4, groups.size());
 		Assert.assertEquals("colleagues", groups.get(0));
 		Assert.assertEquals("family", groups.get(1));
-		Assert.assertEquals("people-i-dont-like", groups.get(2));
+		Assert.assertEquals("friends", groups.get(2));
+		Assert.assertEquals("people-i-dont-like", groups.get(3));
 	}
 
 	@Test

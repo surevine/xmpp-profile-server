@@ -1,14 +1,17 @@
 package com.surevine.profileserver.packetprocessor.iq;
 
+import java.io.StringReader;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.dom.DOMElement;
+import org.dom4j.io.SAXReader;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.Packet;
@@ -96,8 +99,11 @@ public abstract class NamespaceProcessorAbstract
 		response.setChildElement(error);
 	}
 	
-	protected Document getDocumentHelper()
-	{
-		return DocumentHelper.createDocument();
+    protected Element parseXml(String stanzaStr) throws DocumentException {
+    	SAXReader xmlReader = new SAXReader();
+        xmlReader.setMergeAdjacentText(true);
+        xmlReader.setStringInternEnabled(true);
+        xmlReader.setStripWhitespaceText(true);
+        return xmlReader.read(new StringReader(stanzaStr)).getRootElement();
 	}
 }

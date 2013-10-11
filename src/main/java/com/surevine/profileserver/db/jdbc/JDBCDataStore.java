@@ -192,7 +192,28 @@ public class JDBCDataStore implements DataStore {
 		}
 	}
 
-
+    @Override
+    public String getVcardForUser(JID owner, JID user) throws DataStoreException {
+		PreparedStatement getStatement = null;
+		try {
+			getStatement = conn.prepareStatement(dialect.getVcardForUser());
+			getStatement.setString(1, owner.toBareJID());
+			getStatement.setString(2, owner.toBareJID());
+			getStatement.setString(3, user.toBareJID());
+			java.sql.ResultSet rs = getStatement.executeQuery();
+			String vcard = null;
+			if (rs.next()) {
+				vcard = rs.getString(1);
+			}
+            rs.close();
+            return vcard;
+		} catch (SQLException e) {
+			throw new DataStoreException(e);
+		} finally {
+			close(getStatement);
+		}
+    }
+    
 	@Override
 	public String getVcard(JID owner, String name) throws DataStoreException {
 		PreparedStatement getStatement = null;
@@ -353,6 +374,8 @@ public class JDBCDataStore implements DataStore {
 		String getVcard();
 
 		String getPublicVcard();
+
+		String getVcardForUser();
 
 	}
 }

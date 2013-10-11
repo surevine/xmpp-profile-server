@@ -87,6 +87,16 @@ public interface DataStore {
 	String getVcard(JID owner, String name) throws DataStoreException;
 	
     /**
+     * Get vCard for a specific user
+     * 
+     * @param owner
+     * @param user
+     * @return
+     * @throws DataStoreException
+     */
+	String getVcardForUser(JID owner, JID user) throws DataStoreException;
+	
+    /**
      * Clear an owner's roster from the system
      * 
      * @param owner

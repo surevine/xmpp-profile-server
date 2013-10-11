@@ -1,9 +1,11 @@
 package com.surevine.profileserver.packetprocessor.iq.namespace.vcard;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
@@ -17,6 +19,7 @@ import com.surevine.profileserver.packetprocessor.iq.NamespaceProcessorAbstract;
 public class Get extends NamespaceProcessorAbstract {
 
 	private Element vcard;
+	private JID owner;
 	
 	public Get(BlockingQueue<Packet> outQueue, Properties configuration,
 			DataStore dataStore) {
@@ -39,26 +42,41 @@ public class Get extends NamespaceProcessorAbstract {
 		} catch (DataStoreException e) {
 			logger.error(e);
 			setErrorCondition(PacketError.Type.wait, PacketError.Condition.internal_server_error);
+		} catch (DocumentException e) {
+			logger.error(e);
+			setErrorCondition(PacketError.Type.wait, PacketError.Condition.internal_server_error);
 		}
 		outQueue.put(response);
 	}
 	
-	private void handleJidRequest() throws DataStoreException {
-		JID owner = new JID(vcard.attributeValue("jid"));
+	private void handleJidRequest() throws Exception {
+		owner = new JID(vcard.attributeValue("jid"));
 		if (false == dataStore.hasOwner(owner)) {
 			setErrorCondition(PacketError.Type.cancel, PacketError.Condition.item_not_found);
 			return;
 		}
-		ArrayList<String> groups = dataStore.getRosterGroupsForUser(owner, request.getFrom());
-		if (0 == groups.size()) {
+		String vcard = dataStore.getVcardForUser(owner, request.getFrom());
+		if (null == vcard) {
 			sendPublicVcard();
-			return;
+		} else {
+			sendVcard(vcard);
 		}
 	}
 
-	private void sendPublicVcard() {
-		// TODO Auto-generated method stub
-		
+	private void sendPublicVcard() throws Exception {
+		String vcardString = dataStore.getPublicVcard(owner);
+		sendVcard(vcardString);
+	}
+	
+	private void sendVcard(String vcardString) throws Exception {
+		Element vcardElement = response.getElement().addElement("vcard", VCard.NAMESPACE_URI);
+		if (null != vcardString) {
+			List<Element> vcardParts = parseXml(vcardString).elements();
+			for (Element vcardPart : vcardParts) {
+				vcardPart.detach();
+			    vcardElement.add(vcardPart);
+			}
+		}
 	}
 
 }
