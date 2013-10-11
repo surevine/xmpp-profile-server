@@ -21,7 +21,7 @@ CREATE TABLE vcards ("owner" TEXT NOT NULL REFERENCES owners("owner") ON DELETE 
 CREATE TABLE roster (owner TEXT NOT NULL REFERENCES owners("owner") ON DELETE CASCADE,
     "group" TEXT NOT NULL,
     "user" TEXT NOT NULL,
-    PRIMARY KEY ("owner", "user"));
+    PRIMARY KEY ("owner", "user", "group"));
 
 CREATE TABLE rostermap (owner TEXT NOT NULL REFERENCES owners("owner") ON DELETE CASCADE,
     "group" TEXT NOT NULL,
