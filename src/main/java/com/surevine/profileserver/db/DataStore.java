@@ -67,7 +67,24 @@ public interface DataStore {
 	 * @return
 	 * @throws DataStoreException
 	 */
-	ArrayList<String> getRosterGroups(JID owner) throws DataStoreException;
+	ArrayList<String> getOwnerRosterGroupList(JID owner) throws DataStoreException;
+	
+    /**
+     * Get a public vCard
+     * 
+     * @param owner
+     * @return
+     */
+	String getPublicVcard(JID owner) throws DataStoreException;
+	
+	/**
+	 * Get a specific vCard
+	 * 
+	 * @param owner
+	 * @param name
+	 * @throws DataStoreException 
+	 */
+	String getVcard(JID owner, String name) throws DataStoreException;
 	
     /**
      * Clear an owner's roster from the system

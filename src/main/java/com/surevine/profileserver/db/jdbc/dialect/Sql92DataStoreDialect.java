@@ -17,6 +17,10 @@ public class Sql92DataStoreDialect implements DataStoreSQLDialect {
 	private static final String GET_ROSTER_GROUP = "SELECT \"group\" FROM roster WHERE \"owner\" = ? and \"user\" = ?";
 
 	private static final String ADD_ROSTER_ENTRY = "INSERT INTO roster VALUES (?, ?, ?);";
+
+	private static final String GET_VCARD = "SELECT vcard FROM vcards WHERE \"owner\" = ? AND \"name\" = ?;";
+
+	private static final String GET_PUBLIC_VCARD = "SELECT vcard FROM vcards WHERE \"owner\" = ? AND \"default\" = true;";
 	
 	@Override
 	public String selectOwner() {
@@ -51,5 +55,15 @@ public class Sql92DataStoreDialect implements DataStoreSQLDialect {
 	@Override
 	public String getRosterGroup() {
 		return GET_ROSTER_GROUP;
+	}
+
+	@Override
+	public String getVcard() {
+		return GET_VCARD;
+	}
+	
+	@Override
+	public String getPublicVcard() {
+		return GET_PUBLIC_VCARD;
 	}
 }

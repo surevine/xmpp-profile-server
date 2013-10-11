@@ -1,5 +1,6 @@
 package com.surevine.profileserver.packetprocessor.iq.namespace.vcard;
 
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 
