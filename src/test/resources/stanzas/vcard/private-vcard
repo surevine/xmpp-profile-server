@@ -1,0 +1,16 @@
+  <vcard>
+      <fn><text>Romeo Montague</text></fn>
+      <n>
+        <surname>Montague</surname>
+        <given>Romeo</given>
+        <additional>private</additional>
+      </n>
+      <geo><uri>geo:45.26,10.59</uri></geo>
+      <note>
+        <text>My heart belongs to Juliet</text>
+      </note>
+      <impp>
+        <parameters><type><text>personal</text></type></parameters>
+        <uri>xmpp:romeo@montague.lit</uri>
+      </impp>
+  </vcard>

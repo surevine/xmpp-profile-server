@@ -26,6 +26,7 @@ public class GetTest extends IQTestHandler {
 	private LinkedBlockingQueue<Packet> queue;
 
 	private IQ request;
+	private ArrayList<String> groups;
 
 	@Before
 	public void setUp() throws Exception {
@@ -36,6 +37,10 @@ public class GetTest extends IQTestHandler {
 
 		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(
 				true);
+
+		groups = new ArrayList<String>();
+		groups.add("family");
+		groups.add("friends");
 	}
 
 	@Test
