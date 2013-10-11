@@ -201,11 +201,24 @@ public class GetTest extends IQTestHandler {
 	public void testUserInRosterGroupWithMapReceivesThatVcard()
 			throws Exception {
 
+		Mockito.when(
+				dataStore.getVcardForUser(Mockito.any(JID.class),
+						Mockito.any(JID.class))).thenReturn(
+				readStanzaAsString("/vcard/private-vcard"));
+		Mockito.verify(dataStore, Mockito.times(0)).getPublicVcard(Mockito.any(JID.class));
+		vcard.process(readStanzaAsIq("/vcard/get-jid-attribute"));
+
+		Assert.assertEquals(1, queue.size());
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNull(error);
+
+		Element vcard = response.getElement().element("vcard");
+		Assert.assertNotNull(vcard);
+		Assert.assertEquals(VCard.NAMESPACE_URI, vcard.getNamespaceURI());
+		Assert.assertEquals("private",
+				vcard.element("n").elementText("additional"));
 	}
-
-	@Test
-	public void testUserGetsHighestPriorityVcard() throws Exception {
-
-	}
-
 }
