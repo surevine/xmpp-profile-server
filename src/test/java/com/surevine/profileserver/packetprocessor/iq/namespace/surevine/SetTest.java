@@ -49,7 +49,6 @@ public class SetTest extends IQTestHandler {
 	public void testNoUpdateChildElementReturnsBadRequestError()
 			throws Exception {
 		request.getChildElement().element("update").detach();
-		System.out.println(request.toXML());
 		update.process(request);
 
 		Assert.assertEquals(1, queue.size());

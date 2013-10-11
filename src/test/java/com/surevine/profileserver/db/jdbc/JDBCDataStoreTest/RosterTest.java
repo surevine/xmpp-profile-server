@@ -17,7 +17,6 @@ import com.surevine.profileserver.db.jdbc.JDBCDataStore;
 import com.surevine.profileserver.db.jdbc.dialect.Sql92DataStoreDialect;
 import com.surevine.profileserver.helpers.IQTestHandler;
 
-@SuppressWarnings("serial")
 public class RosterTest {
 
 	DatabaseTester dbTester;
