@@ -123,6 +123,11 @@
             <artifactId>log4jdbc-remix</artifactId>
             <version>0.2.3</version>
          </dependency>
+         <dependency>
+            <groupId>com.googlecode.ez-vcard</groupId>
+           <artifactId>ez-vcard</artifactId>
+           <version>0.8.5</version>
+         </dependency>
     </dependencies>
     <repositories>
         <repository>
