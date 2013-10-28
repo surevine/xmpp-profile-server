@@ -56,8 +56,10 @@ public class RosterTest {
 	@Test
 	public void testCanGetRosterGroup() throws Exception {
 		dbTester.loadData("basic-data");
-		Assert.assertEquals("family",
+		Assert.assertEquals("advisor",
 				store.getRosterGroupsForUser(ownerJid, new JID("mum@example.com/home")).get(0));
+		Assert.assertEquals("family",
+				store.getRosterGroupsForUser(ownerJid, new JID("mum@example.com/home")).get(1));
 	}
 	
 	@Test
@@ -80,11 +82,12 @@ public class RosterTest {
 	public void testCanGetRosterGroups() throws Exception {
 		dbTester.loadData("basic-data");
 		ArrayList<String> groups = store.getOwnerRosterGroupList(ownerJid);
-		Assert.assertEquals(4, groups.size());
-		Assert.assertEquals("colleagues", groups.get(0));
-		Assert.assertEquals("family", groups.get(1));
-		Assert.assertEquals("friends", groups.get(2));
-		Assert.assertEquals("people-i-dont-like", groups.get(3));
+		Assert.assertEquals(5, groups.size());
+		Assert.assertEquals("advisor", groups.get(0));
+		Assert.assertEquals("colleagues", groups.get(1));
+		Assert.assertEquals("family", groups.get(2));
+		Assert.assertEquals("friends", groups.get(3));
+		Assert.assertEquals("people-i-dont-like", groups.get(4));
 	}
 
 	@Test
