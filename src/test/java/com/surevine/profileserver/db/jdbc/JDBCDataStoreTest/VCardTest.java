@@ -28,8 +28,7 @@ public class VCardTest {
 	private JID noPublicJid = new JID("nopublic@server.com");
 	private String group = "friends";
 
-	public VCardTest() throws SQLException, IOException,
-			ClassNotFoundException {
+	public VCardTest() throws SQLException, IOException, ClassNotFoundException {
 		dbTester = new DatabaseTester();
 		IQTestHandler.readConf();
 	}
@@ -48,24 +47,25 @@ public class VCardTest {
 	}
 
 	@Test
-	public void testCanAddRosterItem() throws Exception {
-		dbTester.loadData("basic-data");
-		Assert.assertEquals("friends-false-4", store.getVcardForUser(ownerJid, userJid));
-	}
-	
-	@Test
 	public void testCanGetPublicVCard() throws Exception {
 		dbTester.loadData("basic-data");
-		Assert.assertEquals("family-true-2", store.getPublicVcard(ownerJid));
+		Assert.assertEquals("<public-true-2/>", store.getPublicVcard(ownerJid));
 	}
-	
+
 	@Test
 	public void testGetNullWhenNoPublicVcard() throws Exception {
 		dbTester.loadData("basic-data");
 		store.addOwner(noPublicJid);
-		Assert.assertNotNull(store.getPublicVcard(noPublicJid));
+		Assert.assertNull(store.getPublicVcard(noPublicJid));
 	}
-	
+
+	@Test
+	public void testGetExpectedVCardForUserInRosterGroup() throws Exception {
+		dbTester.loadData("basic-data");
+		Assert.assertEquals("<advisor-false-5/>",
+				store.getVcardForUser(ownerJid, new JID("mum@example.com")));
+	}
+
 	@Test
 	public void testGetNullWhenNoAppropriateVCardForUser() throws Exception {
 		dbTester.loadData("basic-data");

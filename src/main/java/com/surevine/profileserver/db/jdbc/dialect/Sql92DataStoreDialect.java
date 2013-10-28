@@ -22,7 +22,7 @@ public class Sql92DataStoreDialect implements DataStoreSQLDialect {
 
 	private static final String GET_PUBLIC_VCARD = "SELECT vcard FROM vcards WHERE \"owner\" = ? AND \"default\" = true;";
 
-	private static final String GET_VCARD_FOR_USER = "SELECT vcards.vcard FROM vcards, rostermap WHERE rostermap.\"owner\" = ? AND rostermap.\"group\" IN (SELECT \"group\" FROM roster WHERE \"owner\" = ? AND \"user\" = ?) AND rostermap.\"owner\" = vcards.\"owner\" AND rostermap.\"name\" = vcards.\"name\" ORDER BY priority DESC LIMIT 1;";
+	private static final String GET_VCARD_FOR_USER = "SELECT vcards.vcard FROM vcards, rostermap WHERE rostermap.\"owner\" = ? AND rostermap.\"group\" IN (SELECT \"group\" FROM roster WHERE \"owner\" = ? AND \"user\" = ?) AND rostermap.\"owner\" = vcards.\"owner\" AND rostermap.\"vcard\" = vcards.\"name\" ORDER BY vcards.\"priority\" DESC LIMIT 1;";
 
 	@Override
 	public String selectOwner() {

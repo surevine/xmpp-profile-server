@@ -46,8 +46,7 @@ public class JDBCDataStore implements DataStore {
 		this.dialect = dialect;
 		transactionStack = new ArrayDeque<JDBCTransaction>();
 	}
-
-
+	
 	@Override
 	public boolean hasOwner(JID jid) throws DataStoreException {
 		PreparedStatement existsStatement = null;
