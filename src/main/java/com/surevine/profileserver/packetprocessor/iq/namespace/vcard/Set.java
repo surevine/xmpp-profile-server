@@ -14,6 +14,8 @@ import com.surevine.profileserver.packetprocessor.iq.NamespaceProcessorAbstract;
 
 public class Set extends NamespaceProcessorAbstract {
 
+	private String name;
+
 	public Set(BlockingQueue<Packet> outQueue, Properties configuration,
 			DataStore dataStore) {
 		super(outQueue, configuration, dataStore);
@@ -24,7 +26,17 @@ public class Set extends NamespaceProcessorAbstract {
         request  = packet;
 		response = IQ.createResultIQ(packet);
 
-		setErrorCondition(PacketError.Type.cancel, PacketError.Condition.feature_not_implemented);
+		name = request.getChildElement().attributeValue("name");
+		
+		if ((null == name) || (0 == name.length())) {
+			createExtendedErrorReply(PacketError.Type.modify, PacketError.Condition.bad_request, "name-required");
+        } else {
+        	if (false == dataStore.hasOwner(request.getFrom())) {
+        		setErrorCondition(PacketError.Type.auth, PacketError.Condition.registration_required);
+        	} else {
+        	    setErrorCondition(PacketError.Type.cancel, PacketError.Condition.feature_not_implemented);
+        	}
+		}
 		outQueue.put(response);
 	}
 

@@ -39,11 +39,61 @@ public class SetTest extends IQTestHandler {
 	}
 	
 	@Test
+	public void testMissingNameAttributeReturnsErrorResponse() throws Exception {
+		
+		IQ modifiedRequest = request;
+		modifiedRequest.getChildElement().attribute("name").detach();
+
+		vcard.process(request);
+		
+		IQ response = (IQ) queue.poll();
+		
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.modify, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.bad_request,
+				error.getCondition());
+		Assert.assertEquals("name-required", error.getApplicationConditionName());
+				
+	}
+	
+	@Test
+	public void testEmptyNameAttributeReturnsErrorResponse() throws Exception {
+		
+		IQ modifiedRequest = request;
+		modifiedRequest.getChildElement().attribute("name").setValue("");
+
+		vcard.process(request);
+		
+		IQ response = (IQ) queue.poll();
+		
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.modify, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.bad_request,
+				error.getCondition());
+		Assert.assertEquals("name-required", error.getApplicationConditionName());
+				
+	}
+	
+	@Test
 	public void testUserWhoIsntInSystemReceivesErrorResponse() throws Exception {
 		
 		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(false);
 		
 		vcard.process(request);
+		
+		IQ response = (IQ) queue.poll();
+		
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.auth, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.registration_required,
+				error.getCondition());
+		
 	}
 
 }
