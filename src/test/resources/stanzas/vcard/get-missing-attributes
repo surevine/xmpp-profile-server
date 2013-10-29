@@ -2,5 +2,5 @@
       id='1'
       to='profiles.shakespeare.lit'
       type='get'>
-    <vcard xmlns='urn:ietf:params:xml:ns:vcard-4.0'/>
+    <vcard xmlns='urn:ietf:params:xml:ns:vcard-4.0' />
   </iq>

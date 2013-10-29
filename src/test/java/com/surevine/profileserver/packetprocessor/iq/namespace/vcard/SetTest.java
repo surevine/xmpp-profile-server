@@ -34,6 +34,16 @@ public class SetTest extends IQTestHandler {
 		queue = new LinkedBlockingQueue<Packet>();
 
 		vcard = new Set(queue, readConf(), dataStore);
+		
+		request = readStanzaAsIq("/vcard/set");
+	}
+	
+	@Test
+	public void testUserWhoIsntInSystemReceivesErrorResponse() throws Exception {
+		
+		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(false);
+		
+		vcard.process(request);
 	}
 
 }

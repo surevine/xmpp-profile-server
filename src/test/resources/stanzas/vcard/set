@@ -1,0 +1,23 @@
+<iq from='romeo@shakespeare.lit/desktop'
+      id='1'
+      to='profiles.shakespeare.lit'
+      type='set'>
+    <vcard xmlns='urn:ietf:params:xml:ns:vcard-4.0' 
+           xmlns:profile='http://surevine.com/xmpp/profiles/1' 
+           profile:name='personal'>
+      <fn><text>Romeo Montague</text></fn>
+      <n>
+        <surname>Montague</surname>
+        <given>Romeo</given>
+        <additional>public</additional>
+      </n>
+      <geo><uri>geo:45.26,10.59</uri></geo>
+      <note>
+        <text>I am Romeo!</text>
+      </note>
+      <impp>
+        <parameters><type><text>personal</text></type></parameters>
+        <uri>xmpp:romeo@montague.lit</uri>
+      </impp>
+    </vcard>
+  </iq>
