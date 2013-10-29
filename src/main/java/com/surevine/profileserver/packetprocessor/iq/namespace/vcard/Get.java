@@ -58,9 +58,9 @@ public class Get extends NamespaceProcessorAbstract {
 		String vcard = dataStore.getVcardForUser(owner, request.getFrom());
 		if (null == vcard) {
 			sendPublicVcard();
-		} else {
-			sendVcard(vcard);
+			return;
 		}
+		sendVcard(vcard);
 	}
 
 	private void sendPublicVcard() throws Exception {
