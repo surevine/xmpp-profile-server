@@ -12,7 +12,6 @@ CREATE TABLE vcards ("owner" TEXT NOT NULL REFERENCES owners("owner") ON DELETE 
     "vcard" TEXT,
     "name" TEXT NOT NULL,
     "default" BOOLEAN DEFAULT false,
-    "priority" INT NOT NULL,
     "last_updated" TIMESTAMP,
     PRIMARY KEY ("owner", "name"));
 
@@ -24,6 +23,7 @@ CREATE TABLE roster ("owner" TEXT NOT NULL REFERENCES owners("owner") ON DELETE 
 CREATE TABLE rostermap ("owner" TEXT NOT NULL REFERENCES owners("owner") ON DELETE CASCADE,
     "group" TEXT NOT NULL,
     "vcard" TEXT NOT NULL,
+    "priority" INT NOT NULL,
     PRIMARY KEY ("owner", "group"));
     
 COMMIT;

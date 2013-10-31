@@ -46,7 +46,7 @@ public class JDBCDataStore implements DataStore {
 		this.dialect = dialect;
 		transactionStack = new ArrayDeque<JDBCTransaction>();
 	}
-	
+
 	@Override
 	public boolean hasOwner(JID jid) throws DataStoreException {
 		PreparedStatement existsStatement = null;
@@ -56,9 +56,9 @@ public class JDBCDataStore implements DataStore {
 			java.sql.ResultSet rs = existsStatement.executeQuery();
 
 			boolean exists = rs.next();
-            rs.close();
+			rs.close();
 			existsStatement.close();
-            
+
 			return exists;
 		} catch (SQLException e) {
 			throw new DataStoreException(e);
@@ -67,7 +67,7 @@ public class JDBCDataStore implements DataStore {
 									// required
 		}
 	}
-	
+
 	@Override
 	public void addOwner(JID jid) throws DataStoreException {
 		PreparedStatement addStatement = null;
@@ -82,8 +82,8 @@ public class JDBCDataStore implements DataStore {
 			close(addStatement);
 		}
 	}
-	
-    @Override
+
+	@Override
 	public void removeOwner(JID jid) throws DataStoreException {
 		PreparedStatement deleteStatement = null;
 		try {
@@ -97,9 +97,10 @@ public class JDBCDataStore implements DataStore {
 			close(deleteStatement);
 		}
 	}
-    
-    @Override
-    public ArrayList<String> getRosterGroupsForUser(JID owner, JID user) throws DataStoreException {
+
+	@Override
+	public ArrayList<String> getRosterGroupsForUser(JID owner, JID user)
+			throws DataStoreException {
 		PreparedStatement getStatement = null;
 		try {
 			getStatement = conn.prepareStatement(dialect.getRosterGroup());
@@ -110,17 +111,18 @@ public class JDBCDataStore implements DataStore {
 			while (rs.next()) {
 				groups.add(rs.getString(1));
 			}
-            rs.close();
-            return groups;
+			rs.close();
+			return groups;
 		} catch (SQLException e) {
 			throw new DataStoreException(e);
 		} finally {
 			close(getStatement);
 		}
-    }
-    
-    @Override
-    public ArrayList<String> getOwnerRosterGroupList(JID owner) throws DataStoreException {
+	}
+
+	@Override
+	public ArrayList<String> getOwnerRosterGroupList(JID owner)
+			throws DataStoreException {
 		PreparedStatement getStatement = null;
 		try {
 			getStatement = conn.prepareStatement(dialect.getRosterGroups());
@@ -130,17 +132,18 @@ public class JDBCDataStore implements DataStore {
 			while (rs.next()) {
 				groups.add(rs.getString(1));
 			}
-            rs.close();
-            return groups;
+			rs.close();
+			return groups;
 		} catch (SQLException e) {
 			throw new DataStoreException(e);
 		} finally {
 			close(getStatement);
 		}
-    }
-    
-    @Override
-    public void addRosterEntry(JID owner, JID user, String group) throws DataStoreException {
+	}
+
+	@Override
+	public void addRosterEntry(JID owner, JID user, String group)
+			throws DataStoreException {
 		PreparedStatement addStatement = null;
 		try {
 			addStatement = conn.prepareStatement(dialect.addRosterEntry());
@@ -154,8 +157,8 @@ public class JDBCDataStore implements DataStore {
 		} finally {
 			close(addStatement);
 		}
-    }
-    
+	}
+
 	@Override
 	public void clearRoster(JID owner) throws DataStoreException {
 		PreparedStatement deleteStatement = null;
@@ -170,7 +173,7 @@ public class JDBCDataStore implements DataStore {
 			close(deleteStatement);
 		}
 	}
-	
+
 	@Override
 	public String getPublicVcard(JID owner) throws DataStoreException {
 		PreparedStatement getStatement = null;
@@ -182,8 +185,8 @@ public class JDBCDataStore implements DataStore {
 			if (rs.next()) {
 				vcard = rs.getString(1);
 			}
-            rs.close();
-            return vcard;
+			rs.close();
+			return vcard;
 		} catch (SQLException e) {
 			throw new DataStoreException(e);
 		} finally {
@@ -191,8 +194,9 @@ public class JDBCDataStore implements DataStore {
 		}
 	}
 
-    @Override
-    public String getVcardForUser(JID owner, JID user) throws DataStoreException {
+	@Override
+	public String getVcardForUser(JID owner, JID user)
+			throws DataStoreException {
 		PreparedStatement getStatement = null;
 		try {
 			getStatement = conn.prepareStatement(dialect.getVcardForUser());
@@ -204,15 +208,15 @@ public class JDBCDataStore implements DataStore {
 			if (rs.next()) {
 				vcard = rs.getString(1);
 			}
-            rs.close();
-            return vcard;
+			rs.close();
+			return vcard;
 		} catch (SQLException e) {
 			throw new DataStoreException(e);
 		} finally {
 			close(getStatement);
 		}
-    }
-    
+	}
+
 	@Override
 	public String getVcard(JID owner, String name) throws DataStoreException {
 		PreparedStatement getStatement = null;
@@ -377,4 +381,5 @@ public class JDBCDataStore implements DataStore {
 		String getVcardForUser();
 
 	}
+
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import junit.framework.Assert;
 
@@ -49,7 +50,7 @@ public class VCardTest {
 	@Test
 	public void testCanGetPublicVCard() throws Exception {
 		dbTester.loadData("basic-data");
-		Assert.assertEquals("<public-true-2/>", store.getPublicVcard(ownerJid));
+		Assert.assertEquals("<public-true/>", store.getPublicVcard(ownerJid));
 	}
 
 	@Test
@@ -62,7 +63,7 @@ public class VCardTest {
 	@Test
 	public void testGetExpectedVCardForUserInRosterGroup() throws Exception {
 		dbTester.loadData("basic-data");
-		Assert.assertEquals("<advisor-false-5/>",
+		Assert.assertEquals("<advisor-false/>",
 				store.getVcardForUser(ownerJid, new JID("mum@example.com")));
 	}
 

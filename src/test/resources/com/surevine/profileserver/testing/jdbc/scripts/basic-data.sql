@@ -10,13 +10,13 @@ INSERT INTO roster VALUES
     ('owner@example.com', 'friends', 'friend@company.org');
     
 INSERT INTO vcards VALUES
-    ('owner@example.com', '<family-false-1/>', 'family', false, 1, NOW()),
-    ('owner@example.com', '<public-true-2/>', 'public', true, 2, NOW()),
-    ('owner@example.com', '<work-false-3/>', 'work', false, 3, NOW()),
-    ('owner@example.com', '<friends-false-4/>', 'friends', false, 4, NOW()),
-    ('owner@example.com', '<advisor-false-5/>', 'advisor', false, 5, NOW());
+    ('owner@example.com', '<family-false/>', 'family', false, NOW()),
+    ('owner@example.com', '<public-true/>', 'public', true, NOW()),
+    ('owner@example.com', '<work-false/>', 'work', false, NOW()),
+    ('owner@example.com', '<friends-false/>', 'friends', false, NOW()),
+    ('owner@example.com', '<advisor-false/>', 'advisor', false, NOW());
        
 INSERT INTO rostermap VALUES
-    ('owner@example.com', 'family', 'family'),
-    ('owner@example.com', 'advisor', 'advisor'),
-    ('owner@example.com', 'work', 'colleagues');
+    ('owner@example.com', 'family', 'family', 1),
+    ('owner@example.com', 'advisor', 'advisor', 2),
+    ('owner@example.com', 'work', 'colleagues', 3);
