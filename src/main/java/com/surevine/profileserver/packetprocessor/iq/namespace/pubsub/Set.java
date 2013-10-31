@@ -63,15 +63,45 @@ public class Set extends NamespaceProcessorAbstract {
 		if (null != pubsub.element("publish")) {
 			handlePublish();
 		} else if (null != pubsub.element("retract")) {
-			handleDelete();
+			handleRetract();
 		} else {
 			setErrorCondition(PacketError.Type.cancel,
 					PacketError.Condition.feature_not_implemented);
 		}
 	}
 
-	private void handleDelete() {
-		// TODO Auto-generated method stub
+	private void handleRetract() {
+		Element retract = request.getChildElement().element("retract");
+
+		String node = retract.attributeValue("node");
+
+		if (null == node) {
+			createExtendedErrorReply(PacketError.Type.modify,
+					PacketError.Condition.bad_request, MISSING_NODE_ATTRIBUTE);
+			return;
+		} else if (false == VCard.NAMESPACE_URI.equals(node)) {
+			createExtendedErrorReply(PacketError.Type.modify,
+					PacketError.Condition.bad_request, INVALID_NODE_VALUE);
+			return;
+		}
+
+		Element item = retract.element("item");
+		if (null == item) {
+			setErrorCondition(PacketError.Type.modify,
+					PacketError.Condition.bad_request);
+			return;
+		}
+
+		name = item.attributeValue("id");
+		if (null == name) {
+			createExtendedErrorReply(PacketError.Type.modify,
+					PacketError.Condition.bad_request, MISSING_ID_ATTRIBUTE);
+			return;
+		} else if (0 == name.length()) {
+			createExtendedErrorReply(PacketError.Type.modify,
+					PacketError.Condition.bad_request, EMPTY_NAME_ATTRIBUTE);
+			return;
+		}
 
 	}
 
