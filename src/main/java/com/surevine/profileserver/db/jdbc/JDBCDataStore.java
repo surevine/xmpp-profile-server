@@ -252,7 +252,7 @@ public class JDBCDataStore implements DataStore {
 			int rows = updateStatement.executeUpdate();
 			updateStatement.close();
 
-			if (rows == 0) { // If the update didn't update any rows
+			if (0 == rows) { // If the update didn't update any rows
 				addStatement = conn.prepareStatement(dialect.addVCard());
 				addStatement.setString(1, owner.toBareJID());
 				addStatement.setString(2, vcard);

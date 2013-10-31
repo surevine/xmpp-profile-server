@@ -26,9 +26,9 @@ public class Sql92DataStoreDialect implements DataStoreSQLDialect {
 
 	private static final String CLEAR_DEFAULT = "UPDATE vcards.vcard SET \"default\" = false WHERE \"owner\" = ?;";
 	
-	private static final String ADD_VCARD_ENTRY = "INSERT INTO vcards VALUES(?, ?, ?, NOW());";
+	private static final String ADD_VCARD_ENTRY = "INSERT INTO \"vcards\" VALUES(?, ?, ?, NOW());";
 	
-	private static final String UPDATE_VCARD_ENTRY = "UPDATE vcards SET \"vcard\" = ? WHERE \"owner\" = ? AND \"name\" = ?;";
+	private static final String UPDATE_VCARD_ENTRY = "UPDATE \"vcards\" SET \"vcard\" = ? WHERE \"owner\" = ? AND \"name\" = ?;";
 
 	@Override
 	public String selectOwner() {
