@@ -15,6 +15,7 @@ import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.packetprocessor.PacketProcessor;
 import com.surevine.profileserver.packetprocessor.iq.namespace.command.Command;
 import com.surevine.profileserver.packetprocessor.iq.namespace.discoinfo.DiscoInfo;
+import com.surevine.profileserver.packetprocessor.iq.namespace.pubsub.PubSub;
 import com.surevine.profileserver.packetprocessor.iq.namespace.register.Register;
 import com.surevine.profileserver.packetprocessor.iq.namespace.surevine.Surevine;
 import com.surevine.profileserver.packetprocessor.iq.namespace.vcard.VCard;
@@ -39,6 +40,8 @@ public class IQProcessor implements PacketProcessor<IQ> {
 		processorsPerNamespace.put(Surevine.NAMESPACE_URI, new Surevine(
 				outQueue, configuration, dataStore));
 		processorsPerNamespace.put(Command.NAMESPACE_URI, new Command(
+				outQueue, configuration, dataStore));
+		processorsPerNamespace.put(PubSub.NAMESPACE_URI, new PubSub(
 				outQueue, configuration, dataStore));
 	}
 

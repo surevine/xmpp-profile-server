@@ -229,15 +229,44 @@ public class JDBCDataStore implements DataStore {
 			if (rs.next()) {
 				vcard = rs.getString(1);
 			}
-            rs.close();
-            return vcard;
+			rs.close();
+			return vcard;
 		} catch (SQLException e) {
 			throw new DataStoreException(e);
 		} finally {
 			close(getStatement);
 		}
 	}
-	
+
+	@Override
+	public void saveVcard(JID owner, String name, String vcard) throws DataStoreException {
+
+		PreparedStatement updateStatement = null;
+		PreparedStatement addStatement = null;
+
+		try {
+			updateStatement = conn.prepareStatement(dialect.updateVCard());
+			updateStatement.setString(1, vcard);
+			updateStatement.setString(3, owner.toBareJID());
+			updateStatement.setString(4, name);
+			int rows = updateStatement.executeUpdate();
+			updateStatement.close();
+
+			if (rows == 0) { // If the update didn't update any rows
+				addStatement = conn.prepareStatement(dialect.addVCard());
+				addStatement.setString(1, owner.toBareJID());
+				addStatement.setString(2, vcard);
+				addStatement.setString(3, name);
+				addStatement.executeUpdate();
+			}
+		} catch (SQLException e) {
+			throw new DataStoreException(e);
+		} finally {
+			close(updateStatement);
+			close(addStatement);
+		}
+	}
+
 	@Override
 	public Transaction beginTransaction() throws DataStoreException {
 		if (transactionHasBeenRolledBack) {

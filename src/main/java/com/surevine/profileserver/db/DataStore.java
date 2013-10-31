@@ -9,6 +9,7 @@ import java.util.Map;
 import com.surevine.profileserver.db.exception.DataStoreException;
 
 import org.dom4j.Element;
+import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
 import org.xmpp.resultsetmanagement.ResultSet;
 
@@ -103,6 +104,16 @@ public interface DataStore {
      * @throws DataStoreException
      */
 	void clearRoster(JID owner) throws DataStoreException;
+	
+	/**
+	 * Save vcard for owner
+	 * 
+	 * @param owner
+	 * @param name  VCard name
+	 * @param vcard VCard data
+	 * @throws DataStoreException 
+	 */
+	void saveVcard(JID owner, String name, String vcard) throws DataStoreException;
 	
 	/**
 	 * Closes this node store instance and releases any resources.

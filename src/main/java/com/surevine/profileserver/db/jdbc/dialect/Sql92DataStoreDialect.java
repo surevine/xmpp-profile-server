@@ -79,4 +79,16 @@ public class Sql92DataStoreDialect implements DataStoreSQLDialect {
 	public String getPublicVcard() {
 		return GET_PUBLIC_VCARD;
 	}
+
+	public String clearDefault() {
+		return CLEAR_DEFAULT;
+	}
+
+	public String updateVCard() {
+		return UPDATE_VCARD_ENTRY;
+	}
+
+	public String addVCard() {
+		return ADD_VCARD_ENTRY;
+	}
 }

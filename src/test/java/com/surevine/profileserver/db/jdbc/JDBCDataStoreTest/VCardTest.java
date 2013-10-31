@@ -72,4 +72,22 @@ public class VCardTest {
 		dbTester.loadData("basic-data");
 		Assert.assertNull(store.getVcardForUser(ownerJid, ownerJid));
 	}
+	
+	@Test
+	public void testCanAddAVCard() throws Exception {
+		dbTester.loadData("basic-data");
+		
+		String name = "test-vcard";
+		JID owner = new JID("owner@exaple.com/resource");
+		
+		HashMap<String, Object> find = new HashMap<String, Object>();
+		find.put("name", name);
+		find.put("owner", owner.toBareJID());
+		
+		dbTester.assertions().assertTableContains("vcards", find, 0);
+		
+		store.saveVcard(owner, name, "<data/>");
+		
+		dbTester.assertions().assertTableContains("vcards", find, 1);
+	}
 }
