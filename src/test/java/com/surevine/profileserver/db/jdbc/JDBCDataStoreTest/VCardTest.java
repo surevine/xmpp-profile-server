@@ -10,6 +10,7 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xmpp.packet.JID;
 
@@ -74,6 +75,7 @@ public class VCardTest {
 	}
 	
 	@Test
+	@Ignore
 	public void testCanAddAVCard() throws Exception {
 		dbTester.loadData("basic-data");
 		
