@@ -77,6 +77,7 @@ public class VCardTest {
 	@Test
 	@Ignore
 	public void testCanAddAVCard() throws Exception {
+		
 		dbTester.loadData("basic-data");
 		
 		String name = "test-vcard";
