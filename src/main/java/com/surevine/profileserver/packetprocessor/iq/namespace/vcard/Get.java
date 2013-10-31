@@ -69,13 +69,14 @@ public class Get extends NamespaceProcessorAbstract {
 	}
 	
 	private void sendVcard(String vcardString) throws Exception {
-		Element vcardElement = response.getElement().addElement("vcard", VCard.NAMESPACE_URI);
-		if (null != vcardString) {
-			List<Element> vcardParts = parseXml(vcardString).elements();
-			for (Element vcardPart : vcardParts) {
-				vcardPart.detach();
-			    vcardElement.add(vcardPart);
-			}
+		Element vcardElement = response.getElement();
+		if (null == vcardString) {
+			Element vcard = vcardElement.addElement("vcard", VCard.NAMESPACE_URI);
+			return;
 		}
+		Element vcard = parseXml(vcardString).element("vcard");
+		vcard.addNamespace("", VCard.NAMESPACE_URI);
+		vcard.detach();
+		vcardElement.add(vcard);
 	}
 }

@@ -134,6 +134,10 @@ public class Set extends NamespaceProcessorAbstract {
 					PacketError.Condition.bad_request, INVALID_VCARD_DATA);
 			return;
 		}
+		saveVcard(vcard);
+	}
+
+	private void saveVcard(ezvcard.VCard vcard) throws DataStoreException {
 		dataStore.saveVcard(request.getFrom(), name, vcard.writeXml());
 	}
 

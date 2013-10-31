@@ -1,16 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vcards xmlns="urn:ietf:params:xml:ns:vcard-4.0">
   <vcard>
-      <fn><text>Romeo Montague</text></fn>
-      <n>
-        <surname>Montague</surname>
-        <given>Romeo</given>
-        <additional>private</additional>
-      </n>
-      <geo><uri>geo:45.26,10.59</uri></geo>
-      <note>
-        <text>My heart belongs to Juliet</text>
-      </note>
-      <impp>
-        <parameters><type><text>personal</text></type></parameters>
-        <uri>xmpp:romeo@montague.lit</uri>
-      </impp>
+    <fn>
+      <text>Romeo Montague</text>
+    </fn>
+    <n>
+      <surname>Montague</surname>
+      <given>Romeo</given>
+      <additional>private</additional>
+      <prefix/>
+      <suffix/>
+    </n>
+    <geo>
+      <uri>geo:45.26,10.59</uri>
+    </geo>
+    <note>
+      <text>I am Romeo!</text>
+    </note>
+    <impp>
+      <parameters>
+        <type>
+          <text>personal</text>
+        </type>
+      </parameters>
+      <uri>xmpp:romeo@montague.lit</uri>
+    </impp>
+    <prodid>
+      <text>ez-vcard 0.8.5</text>
+    </prodid>
   </vcard>
+</vcards>
