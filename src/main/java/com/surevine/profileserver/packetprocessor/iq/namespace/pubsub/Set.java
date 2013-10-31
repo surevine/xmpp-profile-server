@@ -31,6 +31,8 @@ public class Set extends NamespaceProcessorAbstract {
 
 	private String name = null;
 	private ezvcard.VCard vcard = null;
+	
+	private Element item = null;
 
 	public Set(BlockingQueue<Packet> outQueue, Properties configuration,
 			DataStore dataStore) {
@@ -73,71 +75,47 @@ public class Set extends NamespaceProcessorAbstract {
 	private void handleRetract() {
 		Element retract = request.getChildElement().element("retract");
 
-		String node = retract.attributeValue("node");
+        if (false == stanzaCheck(retract)) return;
+
+	}
+
+	private boolean stanzaCheck(Element element) {
+		String node = element.attributeValue("node");
 
 		if (null == node) {
 			createExtendedErrorReply(PacketError.Type.modify,
 					PacketError.Condition.bad_request, MISSING_NODE_ATTRIBUTE);
-			return;
+			return false;
 		} else if (false == VCard.NAMESPACE_URI.equals(node)) {
 			createExtendedErrorReply(PacketError.Type.modify,
 					PacketError.Condition.bad_request, INVALID_NODE_VALUE);
-			return;
+			return false;
 		}
 
-		Element item = retract.element("item");
+		item = element.element("item");
 		if (null == item) {
 			setErrorCondition(PacketError.Type.modify,
 					PacketError.Condition.bad_request);
-			return;
+			return false;
 		}
 
 		name = item.attributeValue("id");
 		if (null == name) {
 			createExtendedErrorReply(PacketError.Type.modify,
 					PacketError.Condition.bad_request, MISSING_ID_ATTRIBUTE);
-			return;
+			return false;
 		} else if (0 == name.length()) {
 			createExtendedErrorReply(PacketError.Type.modify,
 					PacketError.Condition.bad_request, EMPTY_NAME_ATTRIBUTE);
-			return;
+			return false;
 		}
-
+		return true;
 	}
 
 	private void handlePublish() {
 		Element publish = request.getChildElement().element("publish");
-
-		String node = publish.attributeValue("node");
-
-		if (null == node) {
-			createExtendedErrorReply(PacketError.Type.modify,
-					PacketError.Condition.bad_request, MISSING_NODE_ATTRIBUTE);
-			return;
-		} else if (false == VCard.NAMESPACE_URI.equals(node)) {
-			createExtendedErrorReply(PacketError.Type.modify,
-					PacketError.Condition.bad_request, INVALID_NODE_VALUE);
-			return;
-		}
-
-		Element item = publish.element("item");
-		if (null == item) {
-			setErrorCondition(PacketError.Type.modify,
-					PacketError.Condition.bad_request);
-			return;
-		}
-
-		name = item.attributeValue("id");
-		if (null == name) {
-			createExtendedErrorReply(PacketError.Type.modify,
-					PacketError.Condition.bad_request, MISSING_ID_ATTRIBUTE);
-			return;
-		} else if (0 == name.length()) {
-			createExtendedErrorReply(PacketError.Type.modify,
-					PacketError.Condition.bad_request, EMPTY_NAME_ATTRIBUTE);
-			return;
-		}
-
+        if (false == stanzaCheck(publish)) return;
+        
 		try {
 			parseVCard(item.element("vcards"));
 		} catch (DataStoreException e) {
