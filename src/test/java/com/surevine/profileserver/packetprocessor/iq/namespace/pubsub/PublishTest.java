@@ -28,7 +28,11 @@ public class PublishTest extends IQTestHandler {
 
 	@Before
 	public void setUp() throws Exception {
+
 		dataStore = Mockito.mock(DataStore.class);
+		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(
+				true);
+
 		queue = new LinkedBlockingQueue<Packet>();
 
 		vcard = new Set(queue, readConf(), dataStore);
@@ -80,10 +84,30 @@ public class PublishTest extends IQTestHandler {
 	}
 
 	@Test
+	public void testMissingItemElementReturnsErrorResponse() throws Exception {
+
+		IQ modifiedRequest = request;
+		modifiedRequest.getChildElement().element("publish").element("item")
+				.detach();
+
+		vcard.process(request);
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.modify, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.bad_request,
+				error.getCondition());
+	}
+
+	@Test
 	public void testMissingIdAttributeReturnsErrorResponse() throws Exception {
 
 		IQ modifiedRequest = request;
-		modifiedRequest.getChildElement().attribute("id").detach();
+		modifiedRequest.getChildElement().element("publish").element("item")
+				.attribute("id").detach();
 
 		vcard.process(request);
 
@@ -95,15 +119,17 @@ public class PublishTest extends IQTestHandler {
 
 		Assert.assertEquals(PacketError.Condition.bad_request,
 				error.getCondition());
-		Assert.assertEquals("id-required", error.getApplicationConditionName());
+		Assert.assertEquals(vcard.MISSING_ID_ATTRIBUTE,
+				error.getApplicationConditionName());
 
 	}
 
 	@Test
-	public void testEmptyNameAttributeReturnsErrorResponse() throws Exception {
+	public void testEmptyIdAttributeReturnsErrorResponse() throws Exception {
 
 		IQ modifiedRequest = request;
-		modifiedRequest.getChildElement().attribute("id").setValue("");
+		modifiedRequest.getChildElement().element("publish").element("item")
+				.attribute("id").setValue("");
 
 		vcard.process(request);
 
@@ -115,15 +141,20 @@ public class PublishTest extends IQTestHandler {
 
 		Assert.assertEquals(PacketError.Condition.bad_request,
 				error.getCondition());
-		Assert.assertEquals("id-required", error.getApplicationConditionName());
+		Assert.assertEquals(vcard.EMPTY_NAME_ATTRIBUTE,
+				error.getApplicationConditionName());
 
 	}
-
+	
 	@Test
-	public void testUserWhoIsntInSystemReceivesErrorResponse() throws Exception {
-
-		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(
-				false);
+	public void testInvalidVCardEntryReturnsError() throws Exception {
+		IQ modifiedRequest = request;
+		modifiedRequest.getChildElement()
+		    .element("publish")
+		    .element("item")
+			.element("vcards")
+			.element("vcard")
+			.detach();
 
 		vcard.process(request);
 
@@ -131,27 +162,21 @@ public class PublishTest extends IQTestHandler {
 
 		PacketError error = response.getError();
 		Assert.assertNotNull(error);
-		Assert.assertEquals(PacketError.Type.cancel, error.getType());
+		Assert.assertEquals(PacketError.Type.modify, error.getType());
 
-		Assert.assertEquals(PacketError.Condition.item_not_found,
+		Assert.assertEquals(PacketError.Condition.bad_request,
 				error.getCondition());
+		Assert.assertEquals(vcard.INVALID_VCARD_DATA,
+				error.getApplicationConditionName());
 	}
-
+	
 	@Test
-	public void testDataStoreExceptionReturnsExpectedError() throws Exception {
-
-		Mockito.doThrow(new DataStoreException()).when(dataStore)
-				.hasOwner(Mockito.any(JID.class));
-
+	public void testResultResponseReceivedOnSuccess() throws Exception {
 		vcard.process(request);
-
 		IQ response = (IQ) queue.poll();
 
 		PacketError error = response.getError();
-		Assert.assertNotNull(error);
-		Assert.assertEquals(PacketError.Type.wait, error.getType());
-
-		Assert.assertEquals(PacketError.Condition.internal_server_error,
-				error.getCondition());
+		Assert.assertNull(error);
+		Assert.assertEquals(IQ.Type.result, response.getType());
 	}
 }

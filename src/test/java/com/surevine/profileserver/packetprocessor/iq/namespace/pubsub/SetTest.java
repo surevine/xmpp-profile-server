@@ -23,7 +23,7 @@ public class SetTest extends IQTestHandler {
 	private Set vcard;
 	private LinkedBlockingQueue<Packet> queue;
 
-	private IQ publishRequest;
+	private IQ request;
 	private ArrayList<String> groups;
 
 	@Before
@@ -33,15 +33,33 @@ public class SetTest extends IQTestHandler {
 
 		vcard = new Set(queue, readConf(), dataStore);
 
-		publishRequest = readStanzaAsIq("/pubsub/publish");
+		request = readStanzaAsIq("/pubsub/publish");
 	}
 
+	@Test
+	public void testDataStoreExceptionReturnsExpectedError() throws Exception {
+
+		Mockito.doThrow(new DataStoreException()).when(dataStore)
+				.hasOwner(Mockito.any(JID.class));
+
+		vcard.process(request);
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.wait, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.internal_server_error,
+				error.getCondition());
+	}
+	
 	@Test
 	public void testUnknownOwnerRequestedToRegister() throws Exception {
 
 		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(false);
 		
-		vcard.process(publishRequest);
+		vcard.process(request);
 
 		IQ response = (IQ) queue.poll();
 
@@ -60,12 +78,12 @@ public class SetTest extends IQTestHandler {
 
 		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(true);
 		
-		IQ modifiedRequest = publishRequest;
+		IQ modifiedRequest = request;
 		modifiedRequest.getChildElement()
 		    .element("publish")
 			.detach();
 
-		vcard.process(publishRequest);
+		vcard.process(request);
 
 		IQ response = (IQ) queue.poll();
 
