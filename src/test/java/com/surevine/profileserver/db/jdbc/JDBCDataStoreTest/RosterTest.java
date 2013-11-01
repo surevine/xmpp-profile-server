@@ -24,7 +24,7 @@ public class RosterTest {
 
 	JDBCDataStore store;
 	private JID ownerJid = new JID("owner@example.com");
-	private JID userJid  = new JID("user@server.co.uk/desktop");
+	private JID userJid = new JID("user@server.co.uk/desktop");
 	private String group = "friends";
 
 	public RosterTest() throws SQLException, IOException,
@@ -50,34 +50,42 @@ public class RosterTest {
 	public void testCanAddRosterItem() throws Exception {
 		dbTester.loadData("basic-data");
 		store.addRosterEntry(ownerJid, userJid, group);
-		Assert.assertEquals(group, store.getRosterGroupsForUser(ownerJid, userJid).get(0));
+		Assert.assertEquals(group,
+				store.getRosterGroupsForUser(ownerJid, userJid).get(0));
 	}
 
 	@Test
 	public void testCanGetRosterGroup() throws Exception {
 		dbTester.loadData("basic-data");
-		Assert.assertEquals("advisor",
-				store.getRosterGroupsForUser(ownerJid, new JID("mum@example.com/home")).get(0));
-		Assert.assertEquals("family",
-				store.getRosterGroupsForUser(ownerJid, new JID("mum@example.com/home")).get(1));
+		Assert.assertEquals(
+				"advisor",
+				store.getRosterGroupsForUser(ownerJid,
+						new JID("mum@example.com/home")).get(0));
+		Assert.assertEquals(
+				"family",
+				store.getRosterGroupsForUser(ownerJid,
+						new JID("mum@example.com/home")).get(1));
 	}
-	
+
 	@Test
 	public void testNoEntryReturnsEmptyResults() throws Exception {
 		dbTester.loadData("basic-data");
-		Assert.assertEquals(0, store.getRosterGroupsForUser(ownerJid, userJid).size());
+		Assert.assertEquals(0, store.getRosterGroupsForUser(ownerJid, userJid)
+				.size());
 	}
-	
+
 	@Test
-	public void testMultipleRosterGroupsAreReflectedInResults() throws Exception {
+	public void testMultipleRosterGroupsAreReflectedInResults()
+			throws Exception {
 		dbTester.loadData("basic-data");
-		
-		ArrayList<String> groups = store.getRosterGroupsForUser(ownerJid, new JID("boss@company.org"));
+
+		ArrayList<String> groups = store.getRosterGroupsForUser(ownerJid,
+				new JID("boss@company.org"));
 		Assert.assertEquals(2, groups.size());
 		Assert.assertEquals("colleagues", groups.get(0));
 		Assert.assertEquals("people-i-dont-like", groups.get(1));
 	}
-	
+
 	@Test
 	public void testCanGetRosterGroups() throws Exception {
 		dbTester.loadData("basic-data");
@@ -100,26 +108,19 @@ public class RosterTest {
 	@Test
 	public void testCanGetRosterGroupsForVCard() throws Exception {
 		dbTester.loadData("basic-data");
+		Assert.assertEquals(2, store
+				.getRosterGroupsForVCard(ownerJid, "family").size());
 		Assert.assertEquals("family",
 				store.getRosterGroupsForVCard(ownerJid, "family").get(0));
 		Assert.assertEquals("friends",
 				store.getRosterGroupsForVCard(ownerJid, "family").get(1));
 	}
-	
+
 	@Test
 	public void testNoEntryReturnsEmptyResultsForVCard() throws Exception {
 		dbTester.loadData("basic-data");
-		Assert.assertEquals(0, store.getRosterGroupsForVCard(ownerJid, "cats").size());
-	}
-	
-	@Test
-	public void testMultipleRosterGroupsForVCardAreReflectedInResults() throws Exception {
-		dbTester.loadData("basic-data");
-		
-		ArrayList<String> groups = store.getRosterGroupsForVCard(ownerJid, "family");
-		Assert.assertEquals(2, groups.size());
-		Assert.assertEquals("colleagues", groups.get(0));
-		Assert.assertEquals("people-i-dont-like", groups.get(1));
+		Assert.assertEquals(0, store.getRosterGroupsForVCard(ownerJid, "cats")
+				.size());
 	}
 
 }
