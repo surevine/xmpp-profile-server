@@ -24,7 +24,7 @@ public class RosterTest {
 
 	JDBCDataStore store;
 	private JID ownerJid = new JID("owner@example.com");
-	private JID userJid = new JID("user@server.co.uk/desktop");
+	private JID userJid  = new JID("user@server.co.uk/desktop");
 	private String group = "friends";
 
 	public RosterTest() throws SQLException, IOException,
