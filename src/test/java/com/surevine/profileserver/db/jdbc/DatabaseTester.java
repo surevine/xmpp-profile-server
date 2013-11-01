@@ -96,10 +96,9 @@ public class DatabaseTester {
 	}
 	
 	public void close() throws SQLException {
-		if (conn != null) {
-			executeDDL(conn, "SHUTDOWN");
-			conn = null;
-		}
+		if (conn == null) return;
+		executeDDL(conn, "SHUTDOWN");
+		conn = null;
 	}
 
 	public Connection getConnection() throws SQLException {
@@ -142,7 +141,7 @@ public class DatabaseTester {
 			if (sqlQuery.charAt(sqlQuery.length() - 1) == ';') {
 				sqlQuery = sqlQuery.replace(';', ' '); // Remove the ; since
 														// jdbc complains
-					stmt.execute(sqlQuery);
+				stmt.execute(sqlQuery);
 				sqlQuery = "";
 			}
 		}
