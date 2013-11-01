@@ -159,7 +159,6 @@ public class RetractTest extends IQTestHandler {
 		IQ response = (IQ) queue.poll();
 
 		PacketError error = response.getError();
-		System.out.println("\n\n" + response.toXML());
 		Assert.assertNotNull(error);
 		Assert.assertEquals(PacketError.Type.modify, error.getType());
 
