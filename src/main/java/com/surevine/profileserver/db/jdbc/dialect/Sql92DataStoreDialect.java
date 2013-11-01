@@ -24,11 +24,11 @@ public class Sql92DataStoreDialect implements DataStoreSQLDialect {
 
 	private static final String GET_PUBLIC_VCARD = "SELECT \"vcard\" FROM \"vcards\" WHERE \"owner\" = ? AND \"default\" = true;";
 
-	private static final String GET_VCARD_FOR_USER = "SELECT \"vcards\".\"vcard\" FROM \"vcards\", \"rostermap\" WHERE \"rostermap\".\"owner\" = ? AND \"rostermap\".\"group\" IN (SELECT \"group\" FROM roster WHERE \"owner\" = ? AND \"user\" = ?) AND rostermap.\"owner\" = vcards.\"owner\" AND rostermap.\"vcard\" = vcards.\"name\" ORDER BY rostermap.\"priority\" DESC LIMIT 1;";
+	private static final String GET_VCARD_FOR_USER = "SELECT \"vcards\".\"vcard\" FROM \"vcards\", \"rostermap\" WHERE \"rostermap\".\"owner\" = ? AND \"rostermap\".\"group\" IN (SELECT \"group\" FROM \"roster\" WHERE \"owner\" = ? AND \"user\" = ?) AND \"rostermap\".\"owner\" = \"vcards\".\"owner\" AND \"rostermap\".\"vcard\" = \"vcards\".\"name\" ORDER BY \"rostermap\".\"priority\" DESC LIMIT 1;";
 
 	private static final String CLEAR_DEFAULT = "UPDATE \"vcards\".\"vcard\" SET \"default\" = false WHERE \"owner\" = ?;";
 	
-	private static final String ADD_VCARD_ENTRY = "INSERT INTO \"vcards\" VALUES(?, ?, ?, NOW());";
+	private static final String ADD_VCARD_ENTRY = "INSERT INTO \"vcards\" VALUES(?, ?, ?, false, NOW());";
 	
 	private static final String UPDATE_VCARD_ENTRY = "UPDATE \"vcards\" SET \"vcard\" = ? WHERE \"owner\" = ? AND \"name\" = ?;";
 
