@@ -91,4 +91,31 @@ public class VCardTest {
 		
 		dbTester.assertions().assertTableContains("vcards", find, 1);
 	}
+	
+	
+	@Test
+	public void testCanUpdateAVCard() throws Exception {
+		
+		dbTester.loadData("basic-data");
+		
+		String name = "test-vcard";
+		String vcard = "<data/>";
+		String updatedVcard = "<information/>";
+		
+		HashMap<String, Object> find = new HashMap<String, Object>();
+		find.put("name", name);
+		find.put("owner", ownerJid.toBareJID());
+		
+		dbTester.assertions().assertTableContains("vcards", find, 0);
+		
+		store.saveVcard(ownerJid, name, vcard);
+		
+		dbTester.assertions().assertTableContains("vcards", find, 1);
+		
+		Assert.assertEquals(vcard, store.getVcard(ownerJid, name));
+		
+		store.saveVcard(ownerJid, name, updatedVcard);
+		
+		Assert.assertEquals(updatedVcard, store.getVcard(ownerJid, name));
+	}
 }

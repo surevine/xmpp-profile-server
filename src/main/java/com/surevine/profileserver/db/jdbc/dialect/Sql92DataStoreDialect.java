@@ -20,7 +20,7 @@ public class Sql92DataStoreDialect implements DataStoreSQLDialect {
 
 	private static final String ADD_ROSTER_ENTRY = "INSERT INTO \"roster\" VALUES (?, ?, ?);";
 
-	private static final String GET_VCARD = "SELECT \"vcard\' FROM \"vcards\" WHERE \"owner\" = ? AND \"name\" = ?;";
+	private static final String GET_VCARD = "SELECT \"vcard\" FROM \"vcards\" WHERE \"owner\" = ? AND \"name\" = ?;";
 
 	private static final String GET_PUBLIC_VCARD = "SELECT \"vcard\" FROM \"vcards\" WHERE \"owner\" = ? AND \"default\" = true;";
 
