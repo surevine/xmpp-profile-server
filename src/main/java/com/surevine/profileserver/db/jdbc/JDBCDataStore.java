@@ -248,8 +248,8 @@ public class JDBCDataStore implements DataStore {
 		try {
 			updateStatement = conn.prepareStatement(dialect.updateVCard());
 			updateStatement.setString(1, vcard);
-			updateStatement.setString(3, owner.toBareJID());
-			updateStatement.setString(4, name);
+			updateStatement.setString(2, owner.toBareJID());
+			updateStatement.setString(3, name);
 			int rows = updateStatement.executeUpdate();
 			updateStatement.close();
 
