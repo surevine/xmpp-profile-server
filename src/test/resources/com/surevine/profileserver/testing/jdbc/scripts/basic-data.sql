@@ -19,4 +19,5 @@ INSERT INTO "vcards" VALUES
 INSERT INTO "rostermap" VALUES
     ('owner@example.com', 'family', 'family', 1),
     ('owner@example.com', 'advisor', 'advisor', 2),
-    ('owner@example.com', 'work', 'colleagues', 3);
+    ('owner@example.com', 'work', 'colleagues', 3),
+    ('owner@example.com', 'friends', 'family', 4);

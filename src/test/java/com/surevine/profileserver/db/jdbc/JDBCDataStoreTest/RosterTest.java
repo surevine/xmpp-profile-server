@@ -100,9 +100,9 @@ public class RosterTest {
 	@Test
 	public void testCanGetRosterGroupsForVCard() throws Exception {
 		dbTester.loadData("basic-data");
-		Assert.assertEquals("advisor",
-				store.getRosterGroupsForVCard(ownerJid, "family").get(0));
 		Assert.assertEquals("family",
+				store.getRosterGroupsForVCard(ownerJid, "family").get(0));
+		Assert.assertEquals("friends",
 				store.getRosterGroupsForVCard(ownerJid, "family").get(1));
 	}
 	
