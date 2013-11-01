@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -266,6 +267,27 @@ public class JDBCDataStore implements DataStore {
 			close(addStatement);
 		}
 	}
+	
+	@Override
+	public ArrayList<String> getRosterGroupsForVCard(JID owner, String vcard) throws DataStoreException {
+		PreparedStatement getStatement = null;
+		try {
+			getStatement = conn.prepareStatement(dialect.getRosterGroupsForVCard());
+			getStatement.setString(1, owner.toBareJID());
+			getStatement.setString(2, vcard);
+			java.sql.ResultSet rs = getStatement.executeQuery();
+			ArrayList<String> groups = new ArrayList<String>();
+			while (rs.next()) {
+				groups.add(rs.getString(1));
+			}
+			rs.close();
+			return groups;
+		} catch (SQLException e) {
+			throw new DataStoreException(e);
+		} finally {
+			close(getStatement);
+		}
+	}
 
 	@Override
 	public Transaction beginTransaction() throws DataStoreException {
@@ -399,6 +421,8 @@ public class JDBCDataStore implements DataStore {
 
 		String getRosterGroups();
 
+		String getRosterGroupsForVCard();
+		
 		String addRosterEntry();
 
 		String getRosterGroup();

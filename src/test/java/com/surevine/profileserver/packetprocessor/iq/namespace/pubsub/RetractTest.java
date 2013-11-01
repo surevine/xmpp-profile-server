@@ -47,7 +47,7 @@ public class RetractTest extends IQTestHandler {
 		modifiedRequest.getChildElement().element("retract").attribute("node")
 				.detach();
 
-		vcard.process(request);
+		vcard.process(modifiedRequest);
 
 		IQ response = (IQ) queue.poll();
 
@@ -69,7 +69,7 @@ public class RetractTest extends IQTestHandler {
 		modifiedRequest.getChildElement().element("retract").attribute("node")
 				.setValue("not-vcard");
 
-		vcard.process(request);
+		vcard.process(modifiedRequest);
 
 		IQ response = (IQ) queue.poll();
 
@@ -90,7 +90,7 @@ public class RetractTest extends IQTestHandler {
 		modifiedRequest.getChildElement().element("retract").element("item")
 				.detach();
 
-		vcard.process(request);
+		vcard.process(modifiedRequest);
 
 		IQ response = (IQ) queue.poll();
 
@@ -109,7 +109,7 @@ public class RetractTest extends IQTestHandler {
 		modifiedRequest.getChildElement().element("retract").element("item")
 				.attribute("id").detach();
 
-		vcard.process(request);
+		vcard.process(modifiedRequest);
 
 		IQ response = (IQ) queue.poll();
 
@@ -131,6 +131,22 @@ public class RetractTest extends IQTestHandler {
 		modifiedRequest.getChildElement().element("retract").element("item")
 				.attribute("id").setValue("");
 
+		vcard.process(modifiedRequest);
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.modify, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.bad_request,
+				error.getCondition());
+		Assert.assertEquals(vcard.EMPTY_NAME_ATTRIBUTE,
+				error.getApplicationConditionName());
+	}
+	
+	@Test
+	public void testCantDeleteVCardThatIsInUse() throws Exception {
 		vcard.process(request);
 
 		IQ response = (IQ) queue.poll();
@@ -143,10 +159,12 @@ public class RetractTest extends IQTestHandler {
 				error.getCondition());
 		Assert.assertEquals(vcard.EMPTY_NAME_ATTRIBUTE,
 				error.getApplicationConditionName());
-
 	}
+
 	@Test
 	public void testResultResponseReceivedOnSuccess() throws Exception {
+		
+		
 		vcard.process(request);
 		IQ response = (IQ) queue.poll();
 

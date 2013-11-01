@@ -14,6 +14,8 @@ public class Sql92DataStoreDialect implements DataStoreSQLDialect {
 
 	private static final String GET_ROSTER_GROUPS = "SELECT DISTINCT(\"group\") FROM roster WHERE \"owner\" = ? ORDER BY \"group\" ASC;";
 
+	private static final String GET_ROSTER_GROUPS_FOR_VCARD = "SELECT DISTINCT(\"group\") FROM \"rostermap\" WHERE \"owner\" = ? AND \"vcard\" = ? ORDER BY \"group\" ASC;";
+
 	private static final String GET_ROSTER_GROUP = "SELECT \"group\" FROM roster WHERE \"owner\" = ? and \"user\" = ?";
 
 	private static final String ADD_ROSTER_ENTRY = "INSERT INTO roster VALUES (?, ?, ?);";
@@ -53,6 +55,11 @@ public class Sql92DataStoreDialect implements DataStoreSQLDialect {
 	@Override
 	public String getRosterGroups() {
 		return GET_ROSTER_GROUPS;
+	}
+
+	@Override
+	public String getRosterGroupsForVCard() {
+		return GET_ROSTER_GROUPS_FOR_VCARD;
 	}
 
 	@Override

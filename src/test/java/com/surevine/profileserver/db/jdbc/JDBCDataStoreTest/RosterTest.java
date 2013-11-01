@@ -97,4 +97,29 @@ public class RosterTest {
 		Assert.assertEquals(0, store.getOwnerRosterGroupList(ownerJid).size());
 	}
 
+	@Test
+	public void testCanGetRosterGroupsForVCard() throws Exception {
+		dbTester.loadData("basic-data");
+		Assert.assertEquals("advisor",
+				store.getRosterGroupsForVCard(ownerJid, "family").get(0));
+		Assert.assertEquals("family",
+				store.getRosterGroupsForVCard(ownerJid, "family").get(1));
+	}
+	
+	@Test
+	public void testNoEntryReturnsEmptyResultsForVCard() throws Exception {
+		dbTester.loadData("basic-data");
+		Assert.assertEquals(0, store.getRosterGroupsForVCard(ownerJid, "cats").size());
+	}
+	
+	@Test
+	public void testMultipleRosterGroupsForVCardAreReflectedInResults() throws Exception {
+		dbTester.loadData("basic-data");
+		
+		ArrayList<String> groups = store.getRosterGroupsForVCard(ownerJid, "family");
+		Assert.assertEquals(2, groups.size());
+		Assert.assertEquals("colleagues", groups.get(0));
+		Assert.assertEquals("people-i-dont-like", groups.get(1));
+	}
+
 }

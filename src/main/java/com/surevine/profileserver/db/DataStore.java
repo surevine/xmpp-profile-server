@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.surevine.profileserver.db.exception.DataStoreException;
@@ -61,6 +62,17 @@ public interface DataStore {
      */
 	ArrayList<String> getRosterGroupsForUser(JID owner, JID user) throws DataStoreException;
 
+    /**
+     * Get the roster group for an owner
+     *
+     * @param owner
+     * @param vcard
+     * @return
+     * @throws DataStoreException
+     */
+	List<String> getRosterGroupsForVCard(JID owner, String vcard)
+			throws DataStoreException;
+	
 	/**
 	 * Get a list of roster groups for an owner
 	 * 
@@ -68,7 +80,7 @@ public interface DataStore {
 	 * @return
 	 * @throws DataStoreException
 	 */
-	ArrayList<String> getOwnerRosterGroupList(JID owner) throws DataStoreException;
+	List<String> getOwnerRosterGroupList(JID owner) throws DataStoreException;
 	
     /**
      * Get a public vCard
@@ -178,4 +190,5 @@ public interface DataStore {
 		 */
 		void close() throws DataStoreException;
 	}
+
 }
