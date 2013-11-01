@@ -28,10 +28,11 @@ public class Set extends NamespaceProcessorAbstract {
 	public static final String MISSING_ID_ATTRIBUTE = "missing-id-attribute";
 	public static final String EMPTY_NAME_ATTRIBUTE = "empty-name-attribute";
 	public static final String INVALID_VCARD_DATA = "invalid-vcard4-data";
+	public static final String VCARD_USED_IN_ROSTERMAP = "vcard-has-relationship";
 
 	private String name = null;
 	private ezvcard.VCard vcard = null;
-	
+
 	private Element item = null;
 
 	public Set(BlockingQueue<Packet> outQueue, Properties configuration,
@@ -72,10 +73,19 @@ public class Set extends NamespaceProcessorAbstract {
 		}
 	}
 
-	private void handleRetract() {
+	private void handleRetract() throws DataStoreException {
 		Element retract = request.getChildElement().element("retract");
 
-        if (false == stanzaCheck(retract)) return;
+		if (false == stanzaCheck(retract))
+			return;
+		
+		if (0 != dataStore.getRosterGroupsForVCard(request.getFrom(), name)
+				.size()) {
+			createExtendedErrorReply(PacketError.Type.modify,
+					PacketError.Condition.not_acceptable,
+					VCARD_USED_IN_ROSTERMAP);
+			return;
+		}
 
 	}
 
@@ -114,8 +124,9 @@ public class Set extends NamespaceProcessorAbstract {
 
 	private void handlePublish() {
 		Element publish = request.getChildElement().element("publish");
-        if (false == stanzaCheck(publish)) return;
-        
+		if (false == stanzaCheck(publish))
+			return;
+
 		try {
 			parseVCard(item.element("vcards"));
 		} catch (DataStoreException e) {
@@ -135,7 +146,7 @@ public class Set extends NamespaceProcessorAbstract {
 
 	private void parseVCard(Element vcardElement) throws SAXException,
 			DataStoreException, NullPointerException {
-        ezvcard.VCard vcard = Ezvcard.parseXml(vcardElement.asXML()).first();
+		ezvcard.VCard vcard = Ezvcard.parseXml(vcardElement.asXML()).first();
 		ValidationWarnings warnings = vcard.validate(VCardVersion.V4_0);
 		if (0 != warnings.getWarnings().size()) {
 			createExtendedErrorReply(PacketError.Type.modify,

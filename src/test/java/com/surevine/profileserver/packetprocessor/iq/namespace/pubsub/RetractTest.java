@@ -144,27 +144,34 @@ public class RetractTest extends IQTestHandler {
 		Assert.assertEquals(vcard.EMPTY_NAME_ATTRIBUTE,
 				error.getApplicationConditionName());
 	}
-	
+
 	@Test
 	public void testCantDeleteVCardThatIsInUse() throws Exception {
+
+		ArrayList<String> groups = new ArrayList<String>();
+		groups.add("family");
+		Mockito.when(
+				dataStore.getRosterGroupsForVCard(Mockito.any(JID.class),
+						Mockito.anyString())).thenReturn(groups);
+		
 		vcard.process(request);
 
 		IQ response = (IQ) queue.poll();
 
 		PacketError error = response.getError();
+		System.out.println("\n\n" + response.toXML());
 		Assert.assertNotNull(error);
 		Assert.assertEquals(PacketError.Type.modify, error.getType());
 
-		Assert.assertEquals(PacketError.Condition.bad_request,
+		Assert.assertEquals(PacketError.Condition.not_acceptable,
 				error.getCondition());
-		Assert.assertEquals(vcard.EMPTY_NAME_ATTRIBUTE,
+		Assert.assertEquals(vcard.VCARD_USED_IN_ROSTERMAP,
 				error.getApplicationConditionName());
 	}
 
 	@Test
 	public void testResultResponseReceivedOnSuccess() throws Exception {
-		
-		
+
 		vcard.process(request);
 		IQ response = (IQ) queue.poll();
 
