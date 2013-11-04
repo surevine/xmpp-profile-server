@@ -262,6 +262,27 @@ public class JDBCDataStore implements DataStore {
 			close(getStatement);
 		}
 	}
+	
+
+	public ArrayList<VCardMeta> getVCardList(JID owner) throws DataStoreException {
+		PreparedStatement getStatement = null;
+		try {
+			getStatement = conn.prepareStatement(dialect.getVcardList());
+			getStatement.setString(1, owner.toBareJID());
+			java.sql.ResultSet rs = getStatement.executeQuery();
+			ArrayList<VCardMeta> cards = new ArrayList<VCardMeta>();
+			while (rs.next()) {
+				cards.add(new VCardMetaImpl(rs.getString(1), rs.getDate(2),
+						rs.getBoolean(3)));
+			}
+			rs.close();
+			return cards;
+		} catch (SQLException e) {
+			throw new DataStoreException(e);
+		} finally {
+			close(getStatement);
+		}
+	}
 
 	@Override
 	public void saveVcard(JID owner, String name, String vcard)

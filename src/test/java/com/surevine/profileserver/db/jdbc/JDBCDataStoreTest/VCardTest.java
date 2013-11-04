@@ -136,4 +136,16 @@ public class VCardTest {
 		Assert.assertEquals("false", meta.defaultAttribute());
 		Assert.assertEquals(new Date().getDate(), meta.lastUpdated().getDate());
 	}
+	
+	@Test
+	public void testCanGetListOfVCards() throws Exception {
+		dbTester.loadData("basic-data");
+		ArrayList<VCardMeta> cards = store.getVCardList(ownerJid);
+		
+		Assert.assertEquals(5, cards.size());
+		
+		Assert.assertEquals("advisor", cards.get(0).getName());
+		Assert.assertEquals("family", cards.get(1).getName());
+		Assert.assertEquals("friends", cards.get(2).getName());
+	}
 }
