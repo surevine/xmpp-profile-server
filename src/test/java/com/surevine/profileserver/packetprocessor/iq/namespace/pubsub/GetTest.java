@@ -1,10 +1,12 @@
 package com.surevine.profileserver.packetprocessor.iq.namespace.pubsub;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import junit.framework.Assert;
 
+import org.dom4j.Element;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -16,6 +18,8 @@ import org.xmpp.packet.PacketError;
 import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.helpers.IQTestHandler;
+import com.surevine.profileserver.model.VCardMeta;
+import com.surevine.profileserver.model.VCardMetaImpl;
 import com.surevine.profileserver.packetprocessor.iq.namespace.vcard.VCard;
 
 public class GetTest extends IQTestHandler {
@@ -182,7 +186,29 @@ public class GetTest extends IQTestHandler {
 
 	@Test
 	public void testRequestingSingleVCardReturnsExpectedData() throws Exception {
-		// Check for 'default'
+
+		VCardMeta meta = new VCardMetaImpl("group-name", new Date(), true);
+
+		Mockito.when(
+				dataStore.getVcard(Mockito.any(JID.class), Mockito.anyString()))
+				.thenReturn(readStanzaAsString("/vcard/public-vcard"));
+		Mockito.when(
+				dataStore.getVCardMeta(Mockito.any(JID.class),
+						Mockito.anyString())).thenReturn(meta);
+		vcard.process(itemRequest);
+
+		IQ response = (IQ) queue.poll();
+		Element pubsub = response.getElement().element("pubsub");
+		Element items = pubsub.element("items");
+		Element item = items.element("item");
+
+		Assert.assertEquals(PubSub.NAMESPACE_URI, pubsub.getNamespaceURI());
+		Assert.assertEquals(VCard.NAMESPACE_URI, items.attributeValue("node"));
+		Assert.assertEquals("family", item.attributeValue("id"));
+
+		Assert.assertEquals("true", item.attributeValue("profile:default"));
+
+		Assert.assertNotNull(item.element("vcard"));
 	}
 
 	@Test
