@@ -15,17 +15,19 @@ public class PubSub extends AbstractNamespace {
 	public static final String NAMESPACE_URI = "http://jabber.org/protocol/pubsub";
 
 	private final PacketProcessor<IQ> setProcessor;
+	private final PacketProcessor<IQ> getProcessor;
 
 	public PubSub(BlockingQueue<Packet> outQueue, Properties conf,
 			DataStore dataStore) {
 
 		super(outQueue, conf, dataStore);
 		setProcessor = new Set(outQueue, conf, dataStore);
+		getProcessor = new Get(outQueue, conf, dataStore);
 	}
 
 	@Override
 	protected PacketProcessor<IQ> get() {
-		return null;
+		return getProcessor;
 	}
 
 	@Override
