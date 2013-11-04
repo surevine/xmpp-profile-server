@@ -24,7 +24,8 @@ public class GetTest extends IQTestHandler {
 	private Get vcard;
 	private LinkedBlockingQueue<Packet> queue;
 
-	private IQ request;
+	private IQ itemsRequest;
+	private IQ itemRequest;
 	private ArrayList<String> groups;
 
 	@Before
@@ -34,7 +35,8 @@ public class GetTest extends IQTestHandler {
 
 		vcard = new Get(queue, readConf(), dataStore);
 
-		request = readStanzaAsIq("/pubsub/items");
+		itemsRequest = readStanzaAsIq("/pubsub/items");
+		itemRequest = readStanzaAsIq("/pubsub/item");
 
 		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(
 				true);
@@ -46,7 +48,7 @@ public class GetTest extends IQTestHandler {
 		Mockito.doThrow(new DataStoreException()).when(dataStore)
 				.hasOwner(Mockito.any(JID.class));
 
-		vcard.process(request);
+		vcard.process(itemsRequest);
 
 		IQ response = (IQ) queue.poll();
 
@@ -63,8 +65,8 @@ public class GetTest extends IQTestHandler {
 
 		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(
 				false);
-		
-		vcard.process(request);
+
+		vcard.process(itemsRequest);
 
 		IQ response = (IQ) queue.poll();
 
@@ -81,7 +83,7 @@ public class GetTest extends IQTestHandler {
 	public void testUnknownChildElementResultsInErrorResponse()
 			throws Exception {
 
-		IQ modifiedRequest = request.createCopy();
+		IQ modifiedRequest = itemsRequest.createCopy();
 		modifiedRequest.getChildElement().element("items").detach();
 
 		vcard.process(modifiedRequest);
@@ -95,12 +97,13 @@ public class GetTest extends IQTestHandler {
 		Assert.assertEquals(PacketError.Condition.feature_not_implemented,
 				error.getCondition());
 	}
-	
+
 	@Test
-	public void testReceiveErrorIfNodeIsNotEqualToVCardNamespace() throws Exception {
-		IQ modifiedRequest = request.createCopy();
-		modifiedRequest.getChildElement().element("items").detach();
-		modifiedRequest.getChildElement().addElement("items", "not-vcard-xmlns");
+	public void testReceiveErrorIfNodeIsNotEqualToVCardNamespace()
+			throws Exception {
+		IQ modifiedRequest = itemsRequest.createCopy();
+		modifiedRequest.getChildElement().element("items").attribute("node")
+				.setValue("not-vcard-namespace");
 
 		vcard.process(modifiedRequest);
 
@@ -115,15 +118,86 @@ public class GetTest extends IQTestHandler {
 	}
 
 	@Test
+	public void testRequestingSingleVCardWithNoIdReturnsError()
+			throws Exception {
+		IQ modifiedRequest = itemRequest.createCopy();
+		modifiedRequest.getChildElement().element("items").element("item")
+				.attribute("id").detach();
+
+		vcard.process(modifiedRequest);
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.modify, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.bad_request,
+				error.getCondition());
+
+		Assert.assertEquals(vcard.MISSING_VCARD_ID,
+				error.getApplicationConditionName());
+	}
+
+	@Test
+	public void testRequestingSingleVCardWithEmptyIdReturnsError()
+			throws Exception {
+		IQ modifiedRequest = itemRequest.createCopy();
+		modifiedRequest.getChildElement().element("items").element("item")
+				.attribute("id").setValue("");
+
+		vcard.process(modifiedRequest);
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.modify, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.bad_request,
+				error.getCondition());
+		Assert.assertEquals(vcard.MISSING_VCARD_ID,
+				error.getApplicationConditionName());
+	}
+
+	@Test
+	public void testRequestingVCardWhichDoesntExistReturnsItemNotFound()
+			throws Exception {
+
+		Mockito.when(
+				dataStore.getVcard(Mockito.any(JID.class), Mockito.anyString()))
+				.thenReturn(null);
+
+		vcard.process(itemRequest);
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.cancel, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.item_not_found,
+				error.getCondition());
+	}
+
+	@Test
+	public void testRequestingSingleVCardReturnsExpectedData() throws Exception {
+		// Check for 'default'
+	}
+
+	@Test
 	public void testCanRetrieveVCardsWhereThereAreNone() throws Exception {
 
-		/*vcard.process(request);
-		
-		IQ response = (IQ) queue.poll();
-		
-		Assert.assertEquals(IQ.Type.result, response.getType());
-		Element items = response.getElement().element("pubsub", PubSub.NAMESPACE_URI).element("items", VCard.NAMESPACE_URI);
-		Assert.assertNotNull(items);
-		Assert.assertEquals(0, items.children().size());*/
+		/*
+		 * vcard.process(itemsRequest);
+		 * 
+		 * IQ response = (IQ) queue.poll();
+		 * 
+		 * Assert.assertEquals(IQ.Type.result, response.getType()); Element
+		 * items = response.getElement().element("pubsub",
+		 * PubSub.NAMESPACE_URI).element("items", VCard.NAMESPACE_URI);
+		 * Assert.assertNotNull(items); Assert.assertEquals(0,
+		 * items.children().size());
+		 */
 	}
 }

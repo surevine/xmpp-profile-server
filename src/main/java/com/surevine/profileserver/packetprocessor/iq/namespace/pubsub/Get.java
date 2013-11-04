@@ -23,6 +23,8 @@ import ezvcard.io.VCardWriter;
 
 public class Get extends NamespaceProcessorAbstract {
 
+	public static final String MISSING_VCARD_ID = "missing-vcard-id";
+
 	private Element items = null;
 	private Element pubsub = null;
 
@@ -64,10 +66,35 @@ public class Get extends NamespaceProcessorAbstract {
 
 	private void handleItems() throws DataStoreException {
 		items = pubsub.element("items");
-		if (false == items.getNamespaceURI().equals(VCard.NAMESPACE_URI)) {
+		if (false == items.attributeValue("node").equals(VCard.NAMESPACE_URI)) {
 			setErrorCondition(PacketError.Type.modify,
 					PacketError.Condition.bad_request);
 			return;
 		}
+		if (null != items.element("item")) {
+			retrieveVcard(items.element("item"));
+		} else {
+			returnVCards();
+		}
+	}
+
+	private void returnVCards() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void retrieveVcard(Element item) throws DataStoreException {
+		if ((null == item.attributeValue("id"))
+				|| (0 == item.attributeValue("id").length())) {
+			createExtendedErrorReply(PacketError.Type.modify,
+					PacketError.Condition.bad_request, MISSING_VCARD_ID);
+			return;
+		}
+		String vcard = dataStore.getVcard(request.getFrom(), item.attributeValue("id"));
+		if (null == vcard) {
+			setErrorCondition(PacketError.Type.cancel, PacketError.Condition.item_not_found);
+			return;
+		}
+
 	}
 }
