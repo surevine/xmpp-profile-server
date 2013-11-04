@@ -16,6 +16,7 @@ import org.xmpp.packet.PacketError;
 import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.helpers.IQTestHandler;
+import com.surevine.profileserver.packetprocessor.iq.namespace.vcard.VCard;
 
 public class GetTest extends IQTestHandler {
 
@@ -34,6 +35,9 @@ public class GetTest extends IQTestHandler {
 		vcard = new Get(queue, readConf(), dataStore);
 
 		request = readStanzaAsIq("/pubsub/items");
+
+		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(
+				true);
 	}
 
 	@Test
@@ -53,11 +57,12 @@ public class GetTest extends IQTestHandler {
 		Assert.assertEquals(PacketError.Condition.internal_server_error,
 				error.getCondition());
 	}
-	
+
 	@Test
 	public void testUnknownOwnerRequestedToRegister() throws Exception {
 
-		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(false);
+		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(
+				false);
 		
 		vcard.process(request);
 
@@ -76,14 +81,10 @@ public class GetTest extends IQTestHandler {
 	public void testUnknownChildElementResultsInErrorResponse()
 			throws Exception {
 
-		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(true);
-		
-		IQ modifiedRequest = request;
-		modifiedRequest.getChildElement()
-		    .element("items")
-			.detach();
+		IQ modifiedRequest = request.createCopy();
+		modifiedRequest.getChildElement().element("items").detach();
 
-		vcard.process(request);
+		vcard.process(modifiedRequest);
 
 		IQ response = (IQ) queue.poll();
 
@@ -93,5 +94,36 @@ public class GetTest extends IQTestHandler {
 
 		Assert.assertEquals(PacketError.Condition.feature_not_implemented,
 				error.getCondition());
+	}
+	
+	@Test
+	public void testReceiveErrorIfNodeIsNotEqualToVCardNamespace() throws Exception {
+		IQ modifiedRequest = request.createCopy();
+		modifiedRequest.getChildElement().element("items").detach();
+		modifiedRequest.getChildElement().addElement("items", "not-vcard-xmlns");
+
+		vcard.process(modifiedRequest);
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.modify, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.bad_request,
+				error.getCondition());
+	}
+
+	@Test
+	public void testCanRetrieveVCardsWhereThereAreNone() throws Exception {
+
+		/*vcard.process(request);
+		
+		IQ response = (IQ) queue.poll();
+		
+		Assert.assertEquals(IQ.Type.result, response.getType());
+		Element items = response.getElement().element("pubsub", PubSub.NAMESPACE_URI).element("items", VCard.NAMESPACE_URI);
+		Assert.assertNotNull(items);
+		Assert.assertEquals(0, items.children().size());*/
 	}
 }

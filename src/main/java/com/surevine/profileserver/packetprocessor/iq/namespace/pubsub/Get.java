@@ -23,7 +23,8 @@ import ezvcard.io.VCardWriter;
 
 public class Get extends NamespaceProcessorAbstract {
 
-	private Element item = null;
+	private Element items = null;
+	private Element pubsub = null;
 
 	public Get(BlockingQueue<Packet> outQueue, Properties configuration,
 			DataStore dataStore) {
@@ -52,7 +53,7 @@ public class Get extends NamespaceProcessorAbstract {
 					PacketError.Condition.registration_required);
 			return;
 		}
-		Element pubsub = request.getChildElement();
+		pubsub = request.getChildElement();
 		if (null != pubsub.element("items")) {
 			handleItems();
 		} else {
@@ -62,6 +63,11 @@ public class Get extends NamespaceProcessorAbstract {
 	}
 
 	private void handleItems() throws DataStoreException {
-
+		items = pubsub.element("items");
+		if (false == items.getNamespaceURI().equals(VCard.NAMESPACE_URI)) {
+			setErrorCondition(PacketError.Type.modify,
+					PacketError.Condition.bad_request);
+			return;
+		}
 	}
 }
