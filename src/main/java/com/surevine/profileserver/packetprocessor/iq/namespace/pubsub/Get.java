@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.xml.sax.SAXException;
 import org.xmpp.packet.IQ;
@@ -14,6 +15,7 @@ import org.xmpp.packet.PacketError;
 import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.packetprocessor.iq.NamespaceProcessorAbstract;
+import com.surevine.profileserver.packetprocessor.iq.namespace.surevine.Surevine;
 import com.surevine.profileserver.packetprocessor.iq.namespace.vcard.VCard;
 
 import ezvcard.Ezvcard;
@@ -90,11 +92,39 @@ public class Get extends NamespaceProcessorAbstract {
 					PacketError.Condition.bad_request, MISSING_VCARD_ID);
 			return;
 		}
-		String vcard = dataStore.getVcard(request.getFrom(), item.attributeValue("id"));
+		String vcard = dataStore.getVcard(request.getFrom(),
+				item.attributeValue("id"));
 		if (null == vcard) {
-			setErrorCondition(PacketError.Type.cancel, PacketError.Condition.item_not_found);
+			setErrorCondition(PacketError.Type.cancel,
+					PacketError.Condition.item_not_found);
 			return;
 		}
+		sendVcard(vcard, item.attributeValue("id"));
+	}
 
+	private void sendVcard(String vcardString, String name)
+			throws DataStoreException {
+		Element responseItems = response.getElement()
+				.addElement("pubsub", PubSub.NAMESPACE_URI).addElement("items");
+		responseItems.addAttribute("node", VCard.NAMESPACE_URI);
+
+		Element responseItem = responseItems.addElement("item");
+
+		responseItem.addNamespace("profile", Surevine.NAMESPACE_URI);
+		responseItem.addAttribute("profile:default",
+				dataStore.getVCardMeta(request.getFrom(), name)
+						.defaultAttribute());
+
+		responseItem.addAttribute("id", name);
+		try {
+			Element vcard = parseXml(vcardString).element("vcard");
+			vcard.addNamespace("", VCard.NAMESPACE_URI);
+			vcard.detach();
+			responseItem.add(vcard);
+		} catch (DocumentException e) {
+			logger.error(e);
+			setErrorCondition(PacketError.Type.wait,
+					PacketError.Condition.internal_server_error);
+		}
 	}
 }

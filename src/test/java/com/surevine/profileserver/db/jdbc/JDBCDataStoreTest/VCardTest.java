@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import junit.framework.Assert;
@@ -18,6 +19,7 @@ import com.surevine.profileserver.db.jdbc.DatabaseTester;
 import com.surevine.profileserver.db.jdbc.JDBCDataStore;
 import com.surevine.profileserver.db.jdbc.dialect.Sql92DataStoreDialect;
 import com.surevine.profileserver.helpers.IQTestHandler;
+import com.surevine.profileserver.model.VCardMeta;
 
 public class VCardTest {
 
@@ -92,7 +94,6 @@ public class VCardTest {
 		dbTester.assertions().assertTableContains("vcards", find, 1);
 	}
 	
-	
 	@Test
 	public void testCanUpdateAVCard() throws Exception {
 		
@@ -117,5 +118,22 @@ public class VCardTest {
 		store.saveVcard(ownerJid, name, updatedVcard);
 		
 		Assert.assertEquals(updatedVcard, store.getVcard(ownerJid, name));
+	}
+	
+	@Test
+	public void testRetrievingVCardMetaForNonExistingVCardReturnsNull() throws Exception {
+		VCardMeta meta = store.getVCardMeta(ownerJid, "doesnt-exist");
+		Assert.assertNull(meta);
+	}
+	
+	@Test
+	public void testCanRetrieveVCardMeta() throws Exception {
+		dbTester.loadData("basic-data");
+		VCardMeta meta = store.getVCardMeta(ownerJid, group);
+		
+		Assert.assertEquals(group, meta.getName());
+		Assert.assertEquals(false, meta.isDefault());
+		Assert.assertEquals("false", meta.defaultAttribute());
+		Assert.assertEquals(new Date().getDate(), meta.lastUpdated().getDate());
 	}
 }

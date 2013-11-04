@@ -22,6 +22,8 @@ public class Sql92DataStoreDialect implements DataStoreSQLDialect {
 
 	private static final String GET_VCARD = "SELECT \"vcard\" FROM \"vcards\" WHERE \"owner\" = ? AND \"name\" = ?;";
 
+	private static final String GET_VCARD_META = "SELECT \"name\", \"last_updated\", \"default\" FROM \"vcards\" WHERE \"owner\" = ? AND \"name\" = ?;";
+	
 	private static final String GET_PUBLIC_VCARD = "SELECT \"vcard\" FROM \"vcards\" WHERE \"owner\" = ? AND \"default\" = true;";
 
 	private static final String GET_VCARD_FOR_USER = "SELECT \"vcards\".\"vcard\" FROM \"vcards\", \"rostermap\" WHERE \"rostermap\".\"owner\" = ? AND \"rostermap\".\"group\" IN (SELECT \"group\" FROM \"roster\" WHERE \"owner\" = ? AND \"user\" = ?) AND \"rostermap\".\"owner\" = \"vcards\".\"owner\" AND \"rostermap\".\"vcard\" = \"vcards\".\"name\" ORDER BY \"rostermap\".\"priority\" DESC LIMIT 1;";
@@ -97,5 +99,9 @@ public class Sql92DataStoreDialect implements DataStoreSQLDialect {
 
 	public String addVCard() {
 		return ADD_VCARD_ENTRY;
+	}
+
+	public String getVcardMeta() {
+		return GET_VCARD_META;
 	}
 }

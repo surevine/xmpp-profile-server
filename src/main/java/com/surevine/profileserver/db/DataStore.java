@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.surevine.profileserver.db.exception.DataStoreException;
+import com.surevine.profileserver.model.VCardMeta;
 
 import org.dom4j.Element;
 import org.xmpp.packet.IQ;
@@ -108,6 +109,16 @@ public interface DataStore {
      * @throws DataStoreException
      */
 	String getVcardForUser(JID owner, JID user) throws DataStoreException;
+	
+    /**
+     * Get vcard meta data
+     * 
+     * @param from
+     * @param name
+     * @return
+     * @throws DataStoreException 
+     */
+	VCardMeta getVCardMeta(JID from, String name) throws DataStoreException;
 	
     /**
      * Clear an owner's roster from the system

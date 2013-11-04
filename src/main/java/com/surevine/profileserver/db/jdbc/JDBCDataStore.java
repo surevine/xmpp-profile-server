@@ -25,6 +25,8 @@ import com.surevine.profileserver.Configuration;
 import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.db.jdbc.dialect.Sql92DataStoreDialect;
+import com.surevine.profileserver.model.VCardMeta;
+import com.surevine.profileserver.model.VCardMetaImpl;
 
 public class JDBCDataStore implements DataStore {
 
@@ -240,7 +242,30 @@ public class JDBCDataStore implements DataStore {
 	}
 
 	@Override
-	public void saveVcard(JID owner, String name, String vcard) throws DataStoreException {
+	public VCardMeta getVCardMeta(JID owner, String name) throws DataStoreException {
+		PreparedStatement getStatement = null;
+		try {
+			getStatement = conn.prepareStatement(dialect.getVcardMeta());
+			getStatement.setString(1, owner.toBareJID());
+			getStatement.setString(2, name);
+			java.sql.ResultSet rs = getStatement.executeQuery();
+			VCardMeta vcard = null;
+			if (rs.next()) {
+				vcard = new VCardMetaImpl(rs.getString(1), rs.getDate(2),
+						rs.getBoolean(3));
+			}
+			rs.close();
+			return vcard;
+		} catch (SQLException e) {
+			throw new DataStoreException(e);
+		} finally {
+			close(getStatement);
+		}
+	}
+
+	@Override
+	public void saveVcard(JID owner, String name, String vcard)
+			throws DataStoreException {
 
 		PreparedStatement updateStatement = null;
 		PreparedStatement addStatement = null;
@@ -267,12 +292,14 @@ public class JDBCDataStore implements DataStore {
 			close(addStatement);
 		}
 	}
-	
+
 	@Override
-	public ArrayList<String> getRosterGroupsForVCard(JID owner, String vcard) throws DataStoreException {
+	public ArrayList<String> getRosterGroupsForVCard(JID owner, String vcard)
+			throws DataStoreException {
 		PreparedStatement getStatement = null;
 		try {
-			getStatement = conn.prepareStatement(dialect.getRosterGroupsForVCard());
+			getStatement = conn.prepareStatement(dialect
+					.getRosterGroupsForVCard());
 			getStatement.setString(1, owner.toBareJID());
 			getStatement.setString(2, vcard);
 			java.sql.ResultSet rs = getStatement.executeQuery();
@@ -422,7 +449,7 @@ public class JDBCDataStore implements DataStore {
 		String getRosterGroups();
 
 		String getRosterGroupsForVCard();
-		
+
 		String addRosterEntry();
 
 		String getRosterGroup();
