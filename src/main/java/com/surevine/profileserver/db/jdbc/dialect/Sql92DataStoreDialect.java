@@ -110,4 +110,5 @@ public class Sql92DataStoreDialect implements DataStoreSQLDialect {
 	public String getVcardList() {
 		return GET_VCARD_LIST;
 	}
+
 }

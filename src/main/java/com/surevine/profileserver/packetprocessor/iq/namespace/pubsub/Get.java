@@ -1,6 +1,8 @@
 package com.surevine.profileserver.packetprocessor.iq.namespace.pubsub;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 
@@ -14,6 +16,7 @@ import org.xmpp.packet.PacketError;
 
 import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.exception.DataStoreException;
+import com.surevine.profileserver.model.VCardMeta;
 import com.surevine.profileserver.packetprocessor.iq.NamespaceProcessorAbstract;
 import com.surevine.profileserver.packetprocessor.iq.namespace.surevine.Surevine;
 import com.surevine.profileserver.packetprocessor.iq.namespace.vcard.VCard;
@@ -80,9 +83,16 @@ public class Get extends NamespaceProcessorAbstract {
 		}
 	}
 
-	private void returnVCards() {
-		// TODO Auto-generated method stub
+	private void returnVCards() throws DataStoreException {
+		List<VCardMeta> vcards = dataStore.getVCardList(request.getFrom());
+		Element responseItems = response.getElement()
+				.addElement("pubsub", PubSub.NAMESPACE_URI).addElement("items");
+		responseItems.addAttribute("node", VCard.NAMESPACE_URI);
 
+		for (VCardMeta vcard : vcards) {
+			Element item = responseItems.addElement("item");
+			item.addAttribute("id", vcard.getName());
+		}
 	}
 
 	private void retrieveVcard(Element item) throws DataStoreException {

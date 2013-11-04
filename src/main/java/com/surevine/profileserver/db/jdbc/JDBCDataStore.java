@@ -263,7 +263,7 @@ public class JDBCDataStore implements DataStore {
 		}
 	}
 	
-
+    @Override
 	public ArrayList<VCardMeta> getVCardList(JID owner) throws DataStoreException {
 		PreparedStatement getStatement = null;
 		try {
@@ -482,5 +482,6 @@ public class JDBCDataStore implements DataStore {
 		String getVcardForUser();
 
 	}
+
 
 }

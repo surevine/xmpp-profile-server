@@ -100,6 +100,11 @@ public interface DataStore {
 	 */
 	String getVcard(JID owner, String name) throws DataStoreException;
 	
+	/**
+	 * Get a list of owner vCards
+	 */
+	List<VCardMeta> getVCardList(JID owner) throws DataStoreException;
+	
     /**
      * Get vCard for a specific user
      * 
@@ -119,7 +124,7 @@ public interface DataStore {
      * @throws DataStoreException 
      */
 	VCardMeta getVCardMeta(JID from, String name) throws DataStoreException;
-	
+
     /**
      * Clear an owner's roster from the system
      * 

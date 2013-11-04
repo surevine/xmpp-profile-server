@@ -214,16 +214,56 @@ public class GetTest extends IQTestHandler {
 	@Test
 	public void testCanRetrieveVCardsWhereThereAreNone() throws Exception {
 
-		/*
-		 * vcard.process(itemsRequest);
-		 * 
-		 * IQ response = (IQ) queue.poll();
-		 * 
-		 * Assert.assertEquals(IQ.Type.result, response.getType()); Element
-		 * items = response.getElement().element("pubsub",
-		 * PubSub.NAMESPACE_URI).element("items", VCard.NAMESPACE_URI);
-		 * Assert.assertNotNull(items); Assert.assertEquals(0,
-		 * items.children().size());
-		 */
+		Mockito.when(dataStore.getVCardList(Mockito.any(JID.class)))
+				.thenReturn(new ArrayList<VCardMeta>());
+		vcard.process(itemsRequest);
+
+		IQ response = (IQ) queue.poll();
+
+		Assert.assertEquals(IQ.Type.result, response.getType());
+
+		Element pubsub = response.getElement().element("pubsub");
+		Assert.assertEquals(PubSub.NAMESPACE_URI, pubsub.getNamespaceURI());
+
+		Element items = pubsub.element("items");
+		Assert.assertEquals(VCard.NAMESPACE_URI, items.attributeValue("node"));
+
+		Assert.assertEquals(0, items.elements("item").size());
+	}
+
+	@Test
+	public void testCanRetrieveVCardList() throws Exception {
+
+		ArrayList<VCardMeta> metas = new ArrayList<VCardMeta>();
+		metas.add(new VCardMetaImpl("advisor", new Date(), false));
+		metas.add(new VCardMetaImpl("family", new Date(), false));
+		metas.add(new VCardMetaImpl("friends", new Date(), false));
+		metas.add(new VCardMetaImpl("colleagues", new Date(), false));
+		metas.add(new VCardMetaImpl("public", new Date(), true));
+
+		Mockito.when(dataStore.getVCardList(Mockito.any(JID.class)))
+				.thenReturn(metas);
+
+		vcard.process(itemsRequest);
+
+		IQ response = (IQ) queue.poll();
+
+		Assert.assertEquals(IQ.Type.result, response.getType());
+
+		Element pubsub = response.getElement().element("pubsub");
+		Assert.assertEquals(PubSub.NAMESPACE_URI, pubsub.getNamespaceURI());
+
+		Element items = pubsub.element("items");
+		Assert.assertEquals(VCard.NAMESPACE_URI, items.attributeValue("node"));
+
+		Assert.assertEquals(5, items.elements("item").size());
+
+		Assert.assertEquals("advisor",
+				((Element) items.elements("item").get(0)).attributeValue("id"));
+		Assert.assertEquals("family",
+				((Element) items.elements("item").get(1)).attributeValue("id"));
+		Assert.assertEquals("friends",
+				((Element) items.elements("item").get(2)).attributeValue("id"));
+
 	}
 }
