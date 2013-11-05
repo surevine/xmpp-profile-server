@@ -63,9 +63,21 @@ public class Get extends NamespaceProcessorAbstract {
 		pubsub = request.getChildElement();
 		if (null != pubsub.element("items")) {
 			handleItems();
+		} else if (null != pubsub.element("configure")) {
+			handleConfiguration();
 		} else {
 			setErrorCondition(PacketError.Type.cancel,
 					PacketError.Condition.feature_not_implemented);
+		}
+	}
+
+	private void handleConfiguration() {
+		Element configure = request.getChildElement().element("configure");
+		if ((null == configure.attributeValue("node")) ||
+				(false == configure.attributeValue("node").equals(VCard.NAMESPACE_URI))) {
+			setErrorCondition(PacketError.Type.modify,
+					PacketError.Condition.bad_request);
+			return;
 		}
 	}
 

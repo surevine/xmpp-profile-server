@@ -292,7 +292,7 @@ public class GetTest extends IQTestHandler {
 	public void testEmptyNodeAttributeOnConfigureReturnsError() throws Exception {
 		IQ modifiedRequest = configureRequest.createCopy();
 		modifiedRequest.getChildElement().element("configure").attribute("node")
-				.setValue("");
+				.setValue("not-vcard-namespace");
 
 		vcard.process(modifiedRequest);
 
