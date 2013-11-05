@@ -1,7 +1,7 @@
 <iq from='romeo@shakespeare.lit/desktop'
       id='1'
       to='profiles.shakespeare.lit'
-      type='set'>
+      type='get'>
     <pubsub xmlns='http://jabber.org/protocol/pubsub'>
       <items node='urn:ietf:params:xml:ns:vcard-4.0'>
           <item id='family' />
