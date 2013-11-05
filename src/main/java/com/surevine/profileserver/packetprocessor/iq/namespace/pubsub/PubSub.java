@@ -13,7 +13,8 @@ import com.surevine.profileserver.packetprocessor.iq.namespace.AbstractNamespace
 public class PubSub extends AbstractNamespace {
 
 	public static final String NAMESPACE_URI = "http://jabber.org/protocol/pubsub";
-
+    public static final String NAMESPACE_OWNER = "http://jabber.org/protocol/pubsub#owner";
+    
 	private final PacketProcessor<IQ> setProcessor;
 	private final PacketProcessor<IQ> getProcessor;
 

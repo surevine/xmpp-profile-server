@@ -31,6 +31,9 @@ public class IQProcessor implements PacketProcessor<IQ> {
 			Configuration configuration, DataStore dataStore) {
 		this.outQueue = outQueue;
 
+		PubSub pubsub = new PubSub(
+				outQueue, configuration, dataStore);
+		
 		processorsPerNamespace.put(VCard.NAMESPACE_URI, new VCard(outQueue,
 				configuration, dataStore));
 		processorsPerNamespace.put(DiscoInfo.NAMESPACE_URI, new DiscoInfo(
@@ -41,8 +44,8 @@ public class IQProcessor implements PacketProcessor<IQ> {
 				outQueue, configuration, dataStore));
 		processorsPerNamespace.put(Command.NAMESPACE_URI, new Command(
 				outQueue, configuration, dataStore));
-		processorsPerNamespace.put(PubSub.NAMESPACE_URI, new PubSub(
-				outQueue, configuration, dataStore));
+		processorsPerNamespace.put(PubSub.NAMESPACE_URI, pubsub);
+		processorsPerNamespace.put(PubSub.NAMESPACE_OWNER, pubsub);
 	}
 
 	@Override

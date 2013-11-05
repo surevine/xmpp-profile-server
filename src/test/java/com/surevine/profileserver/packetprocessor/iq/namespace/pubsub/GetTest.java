@@ -30,6 +30,8 @@ public class GetTest extends IQTestHandler {
 
 	private IQ itemsRequest;
 	private IQ itemRequest;
+	private IQ configureRequest;
+	
 	private ArrayList<String> groups;
 
 	@Before
@@ -41,6 +43,7 @@ public class GetTest extends IQTestHandler {
 
 		itemsRequest = readStanzaAsIq("/pubsub/items");
 		itemRequest = readStanzaAsIq("/pubsub/item");
+		configureRequest = readStanzaAsIq("/pubsub/configuration-get");
 
 		Mockito.when(dataStore.hasOwner(Mockito.any(JID.class))).thenReturn(
 				true);
@@ -266,4 +269,41 @@ public class GetTest extends IQTestHandler {
 				((Element) items.elements("item").get(2)).attributeValue("id"));
 
 	}
+	
+	@Test
+	public void testNoNodeAttributeOnConfigureReturnsError() throws Exception {
+		IQ modifiedRequest = configureRequest.createCopy();
+		modifiedRequest.getChildElement().element("configure").attribute("node")
+				.detach();
+
+		vcard.process(modifiedRequest);
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.modify, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.bad_request,
+				error.getCondition());
+	}
+	
+	@Test
+	public void testEmptyNodeAttributeOnConfigureReturnsError() throws Exception {
+		IQ modifiedRequest = configureRequest.createCopy();
+		modifiedRequest.getChildElement().element("configure").attribute("node")
+				.setValue("");
+
+		vcard.process(modifiedRequest);
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.modify, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.bad_request,
+				error.getCondition());
+	}
+	
 }
