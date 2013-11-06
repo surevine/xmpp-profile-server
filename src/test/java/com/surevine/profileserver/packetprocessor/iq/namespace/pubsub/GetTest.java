@@ -2,6 +2,7 @@ package com.surevine.profileserver.packetprocessor.iq.namespace.pubsub;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import junit.framework.Assert;
@@ -325,7 +326,6 @@ public class GetTest extends IQTestHandler {
 		vcard.process(configureRequest);
 
 		IQ response = (IQ) queue.poll();
-System.out.println("\n\n\n" + response.toXML() + "\n\n\n");
 
 		Assert.assertEquals(IQ.Type.result, response.getType());
 
@@ -348,8 +348,136 @@ System.out.println("\n\n\n" + response.toXML() + "\n\n\n");
 
 		Assert.assertEquals(1, field.elements("option").size());
 
-		Assert.assertEquals(VCard.NONE, ((Element) field.elements("option").get(0))
-				.elementText("value"));
+		Assert.assertEquals(VCard.NONE, ((Element) field.elements("option")
+				.get(0)).elementText("value"));
 	}
 
+	@Test
+	public void testReturnsExpectedDataFormWithVCards() throws Exception {
+
+		ArrayList<VCardMeta> cards = new ArrayList<VCardMeta>();
+		cards.add(new VCardMetaImpl("card-family", new Date(), false));
+		cards.add(new VCardMetaImpl("card-work", new Date(), false));
+		cards.add(new VCardMetaImpl("card-general", new Date(), true));
+		Mockito.when(dataStore.getVCardList(Mockito.any(JID.class)))
+				.thenReturn(cards);
+
+		ArrayList<String> groups = new ArrayList<String>();
+		groups.add("family");
+		groups.add("friends");
+		groups.add("hugs");
+		groups.add("work");
+		groups.add("professional");
+		Mockito.when(dataStore.getOwnerRosterGroupList(Mockito.any(JID.class)))
+				.thenReturn(groups);
+
+		ArrayList<String> cardFamilyRosterGroups = new ArrayList<String>();
+		cardFamilyRosterGroups.add("family");
+		cardFamilyRosterGroups.add("friends");
+		cardFamilyRosterGroups.add("hugs");
+		Mockito.when(
+				dataStore.getRosterGroupsForVCard(Mockito.any(JID.class),
+						Mockito.eq("card-family"))).thenReturn(
+				cardFamilyRosterGroups);
+
+		ArrayList<String> cardWorkRosterGroups = new ArrayList<String>();
+		cardWorkRosterGroups.add("work");
+		cardWorkRosterGroups.add("professional");
+		Mockito.when(
+				dataStore.getRosterGroupsForVCard(Mockito.any(JID.class),
+						Mockito.eq("card-work"))).thenReturn(
+				cardWorkRosterGroups);
+
+		ArrayList<String> cardGeneralRosterGroups = new ArrayList<String>();
+		Mockito.when(
+				dataStore.getRosterGroupsForVCard(Mockito.any(JID.class),
+						Mockito.eq("card-general"))).thenReturn(
+				cardGeneralRosterGroups);
+
+		vcard.process(configureRequest);
+
+		IQ response = (IQ) queue.poll();
+
+		Assert.assertEquals(IQ.Type.result, response.getType());
+
+		Element pubsub = response.getChildElement();
+		Assert.assertEquals(PubSub.NAMESPACE_OWNER, pubsub.getNamespaceURI());
+		Element configure = pubsub.element("configure");
+		Assert.assertEquals(VCard.NAMESPACE_URI,
+				configure.attributeValue("node"));
+		Element x = configure.element("x");
+		Assert.assertEquals(DataForm.NAMESPACE, x.getNamespaceURI());
+
+		Assert.assertEquals(cards.size() + 1, x.elements().size());
+
+		System.out.println("\n\n\n\n" + response.toXML());
+
+		// Check vcard map fields are correct
+		int counter = 0;
+		for (VCardMeta card : cards) {
+			checkDataFormEntry(card, groups,
+					(Element) x.elements("field").get(counter));
+			++counter;
+		}
+		// Manually check their values
+		
+
+		// Check 'default' vcard default element
+		Element field = (Element) x.elements("field").get(cards.size());
+
+		Assert.assertEquals(cards.size() + 1, field.elements("option").size());
+
+		Assert.assertEquals(Get.VCARD_DEFAULT, field.attributeValue("var"));
+		Assert.assertEquals(FormField.Type.list_single.toXMPP(),
+				field.attributeValue("type"));
+		Assert.assertEquals(Get.VCARD_DEFAULT_LABEL,
+				field.attributeValue("label"));
+
+		Assert.assertEquals(VCard.NONE, ((Element) field.elements("option")
+				.get(0)).elementText("value"));
+
+		
+		Assert.assertEquals(cards.get(0).getName(),
+				((Element) field.elements("option").get(1))
+						.elementText("value"));
+		Assert.assertEquals(cards.get(0).getName(),
+				((Element) field.elements("option").get(1))
+						.attributeValue("label"));
+
+		Assert.assertEquals(cards.get(1).getName(),
+				((Element) field.elements("option").get(2))
+						.elementText("value"));
+		Assert.assertEquals(cards.get(1).getName(),
+				((Element) field.elements("option").get(2))
+						.attributeValue("label"));
+
+		Assert.assertEquals(cards.get(2).getName(),
+				((Element) field.elements("option").get(3))
+						.elementText("value"));
+		Assert.assertEquals(cards.get(2).getName(),
+				((Element) field.elements("option").get(3))
+						.attributeValue("label"));
+	}
+
+	private void checkDataFormEntry(VCardMeta card, ArrayList<String> groups,
+			Element field) {
+		Assert.assertEquals(Get.DATAFORM_VARIABLE_PREFIX + card.getName(),
+				field.attributeValue("var"));
+		Assert.assertEquals(FormField.Type.list_multi.toXMPP(),
+				field.attributeValue("type"));
+
+		Assert.assertEquals(String.format(Get.DATAFORM_LABEL, card.getName()),
+				field.attributeValue("label"));
+		
+		List<Element> options = field.elements("option");
+		int counter = 0;
+		for (Element option : options) {
+			Assert.assertEquals(groups.get(counter),
+					option.attributeValue("label"));
+			Assert.assertEquals(groups.get(counter),
+					option.elementText("value"));
+		    ++counter;
+		}
+
+	}
 }

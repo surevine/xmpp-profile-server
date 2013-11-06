@@ -35,6 +35,10 @@ public class Get extends NamespaceProcessorAbstract {
 	public static final String VCARD_DEFAULT = "default-vcard";
 	public static final String VCARD_DEFAULT_LABEL = "vCard to display to users with no roster group";;
 
+	public static final String DATAFORM_VARIABLE_PREFIX = "vcard#";
+
+	public static final String DATAFORM_LABEL = "Roster groups which can view vCard '%s'";
+
 	private Element items = null;
 	private Element pubsub = null;
 
@@ -120,8 +124,8 @@ public class Get extends NamespaceProcessorAbstract {
 
 	private void addVCardField(DataForm dataForm, VCardMeta vcard,
 			List<String> rosterGroups) {
-		FormField field = dataForm.addField("vcard#" + vcard.getName(),
-				"Roster groups which can view vCard '" + vcard.getName() + "'",
+		FormField field = dataForm.addField(DATAFORM_VARIABLE_PREFIX + vcard.getName(),
+				String.format(DATAFORM_LABEL, vcard.getName()),
 				FormField.Type.list_multi);
 		for (String group : rosterGroups) {
 			field.addOption(group, group);
