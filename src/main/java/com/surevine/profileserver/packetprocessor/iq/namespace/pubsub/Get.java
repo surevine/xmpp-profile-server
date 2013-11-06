@@ -123,7 +123,7 @@ public class Get extends NamespaceProcessorAbstract {
 	}
 
 	private void addVCardField(DataForm dataForm, VCardMeta vcard,
-			List<String> rosterGroups) {
+			List<String> rosterGroups) throws DataStoreException {
 		FormField field = dataForm.addField(DATAFORM_VARIABLE_PREFIX + vcard.getName(),
 				String.format(DATAFORM_LABEL, vcard.getName()),
 				FormField.Type.list_multi);
@@ -131,6 +131,10 @@ public class Get extends NamespaceProcessorAbstract {
 			field.addOption(group, group);
 		}
 		// Add values
+		List<String> maps = dataStore.getRosterGroupsForVCard(request.getFrom(), vcard.getName());
+		for (String map : maps) {
+			field.addValue(map);
+		}
 	}
 
 	private void handleItems() throws DataStoreException {

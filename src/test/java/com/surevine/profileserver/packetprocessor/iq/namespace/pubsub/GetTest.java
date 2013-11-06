@@ -410,8 +410,6 @@ public class GetTest extends IQTestHandler {
 
 		Assert.assertEquals(cards.size() + 1, x.elements().size());
 
-		System.out.println("\n\n\n\n" + response.toXML());
-
 		// Check vcard map fields are correct
 		int counter = 0;
 		for (VCardMeta card : cards) {
@@ -420,8 +418,25 @@ public class GetTest extends IQTestHandler {
 			++counter;
 		}
 		// Manually check their values
+		Assert.assertEquals(3, ((Element) x.elements("field")
+				.get(0)).elements("value").size());
+		Assert.assertEquals("family", ((Element) ((Element) x.elements("field")
+				.get(0)).elements("value").get(0)).getText());
+		Assert.assertEquals("friends", ((Element) ((Element) x.elements("field")
+				.get(0)).elements("value").get(1)).getText());
+		Assert.assertEquals("hugs", ((Element) ((Element) x.elements("field")
+				.get(0)).elements("value").get(2)).getText());
 		
-
+		Assert.assertEquals(2, ((Element) x.elements("field")
+				.get(1)).elements("value").size());
+		Assert.assertEquals("work", ((Element) ((Element) x.elements("field")
+				.get(1)).elements("value").get(0)).getText());
+		Assert.assertEquals("professional", ((Element) ((Element) x.elements("field")
+				.get(1)).elements("value").get(1)).getText());
+		
+		Assert.assertEquals(0, ((Element) x.elements("field")
+				.get(2)).elements("value").size());
+		
 		// Check 'default' vcard default element
 		Element field = (Element) x.elements("field").get(cards.size());
 
@@ -436,7 +451,6 @@ public class GetTest extends IQTestHandler {
 		Assert.assertEquals(VCard.NONE, ((Element) field.elements("option")
 				.get(0)).elementText("value"));
 
-		
 		Assert.assertEquals(cards.get(0).getName(),
 				((Element) field.elements("option").get(1))
 						.elementText("value"));
@@ -468,7 +482,7 @@ public class GetTest extends IQTestHandler {
 
 		Assert.assertEquals(String.format(Get.DATAFORM_LABEL, card.getName()),
 				field.attributeValue("label"));
-		
+
 		List<Element> options = field.elements("option");
 		int counter = 0;
 		for (Element option : options) {
@@ -476,7 +490,7 @@ public class GetTest extends IQTestHandler {
 					option.attributeValue("label"));
 			Assert.assertEquals(groups.get(counter),
 					option.elementText("value"));
-		    ++counter;
+			++counter;
 		}
 
 	}
