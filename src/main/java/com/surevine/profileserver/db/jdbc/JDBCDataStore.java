@@ -226,7 +226,7 @@ public class JDBCDataStore implements DataStore {
 		try {
 			getStatement = conn.prepareStatement(dialect.getVcard());
 			getStatement.setString(1, owner.toBareJID());
-			getStatement.setString(2, name);
+			getStatement.setString(2, name.toLowerCase());
 			java.sql.ResultSet rs = getStatement.executeQuery();
 			String vcard = null;
 			if (rs.next()) {
@@ -247,7 +247,7 @@ public class JDBCDataStore implements DataStore {
 		try {
 			getStatement = conn.prepareStatement(dialect.getVcardMeta());
 			getStatement.setString(1, owner.toBareJID());
-			getStatement.setString(2, name);
+			getStatement.setString(2, name.toLowerCase());
 			java.sql.ResultSet rs = getStatement.executeQuery();
 			VCardMeta vcard = null;
 			if (rs.next()) {
@@ -295,7 +295,7 @@ public class JDBCDataStore implements DataStore {
 			updateStatement = conn.prepareStatement(dialect.updateVCard());
 			updateStatement.setString(1, vcard);
 			updateStatement.setString(2, owner.toBareJID());
-			updateStatement.setString(3, name);
+			updateStatement.setString(3, name.toLowerCase());
 			int rows = updateStatement.executeUpdate();
 			updateStatement.close();
 
@@ -303,7 +303,7 @@ public class JDBCDataStore implements DataStore {
 				addStatement = conn.prepareStatement(dialect.addVCard());
 				addStatement.setString(1, owner.toBareJID());
 				addStatement.setString(2, vcard);
-				addStatement.setString(3, name);
+				addStatement.setString(3, name.toLowerCase());
 				addStatement.executeUpdate();
 			}
 		} catch (SQLException e) {
@@ -322,7 +322,7 @@ public class JDBCDataStore implements DataStore {
 			getStatement = conn.prepareStatement(dialect
 					.getRosterGroupsForVCard());
 			getStatement.setString(1, owner.toBareJID());
-			getStatement.setString(2, vcard);
+			getStatement.setString(2, vcard.toLowerCase());
 			java.sql.ResultSet rs = getStatement.executeQuery();
 			ArrayList<String> groups = new ArrayList<String>();
 			while (rs.next()) {
