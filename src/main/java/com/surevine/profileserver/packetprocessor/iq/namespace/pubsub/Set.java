@@ -119,7 +119,7 @@ public class Set extends NamespaceProcessorAbstract {
 			createExtendedErrorReply(PacketError.Type.modify,
 					PacketError.Condition.bad_request, EMPTY_NAME_ATTRIBUTE);
 			return false;
-		} else if (true == name.toLowerCase().equals("none")) {
+		} else if (true == name.toLowerCase().equals(VCard.NONE)) {
 			createExtendedErrorReply(PacketError.Type.modify,
 					PacketError.Condition.bad_request, NONE_NOT_ALLOWED);
 			return false;

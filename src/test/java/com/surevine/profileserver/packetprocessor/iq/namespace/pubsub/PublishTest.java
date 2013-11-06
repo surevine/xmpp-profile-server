@@ -16,6 +16,7 @@ import org.xmpp.packet.PacketError;
 import com.surevine.profileserver.db.DataStore;
 import com.surevine.profileserver.db.exception.DataStoreException;
 import com.surevine.profileserver.helpers.IQTestHandler;
+import com.surevine.profileserver.packetprocessor.iq.namespace.vcard.VCard;
 
 public class PublishTest extends IQTestHandler {
 
@@ -188,7 +189,7 @@ public class PublishTest extends IQTestHandler {
 		    .element("publish")
 		    .element("item")
 			.attribute("id")
-			.setValue("none");
+			.setValue(VCard.NONE);
 
 		vcard.process(request);
 

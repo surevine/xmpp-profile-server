@@ -14,6 +14,8 @@ public class VCard extends AbstractNamespace {
 
 	public static final String NAMESPACE_URI = "urn:ietf:params:xml:ns:vcard-4.0";
 
+	public static final String NONE = "none";
+
 	private final PacketProcessor<IQ> getProcessor;
 
 	public VCard(BlockingQueue<Packet> outQueue, Properties conf,
