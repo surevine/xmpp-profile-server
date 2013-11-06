@@ -29,6 +29,7 @@ public class Set extends NamespaceProcessorAbstract {
 	public static final String EMPTY_NAME_ATTRIBUTE = "empty-name-attribute";
 	public static final String INVALID_VCARD_DATA = "invalid-vcard4-data";
 	public static final String VCARD_USED_IN_ROSTERMAP = "vcard-has-relationship";
+	public static final String NONE_NOT_ALLOWED = "id-none-not-allowed";
 
 	private String name = null;
 	private ezvcard.VCard vcard = null;
@@ -117,6 +118,10 @@ public class Set extends NamespaceProcessorAbstract {
 		} else if (0 == name.length()) {
 			createExtendedErrorReply(PacketError.Type.modify,
 					PacketError.Condition.bad_request, EMPTY_NAME_ATTRIBUTE);
+			return false;
+		} else if (true == name.toLowerCase().equals("none")) {
+			createExtendedErrorReply(PacketError.Type.modify,
+					PacketError.Condition.bad_request, NONE_NOT_ALLOWED);
 			return false;
 		}
 		return true;

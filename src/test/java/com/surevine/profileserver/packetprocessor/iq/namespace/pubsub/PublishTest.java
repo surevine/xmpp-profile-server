@@ -179,4 +179,28 @@ public class PublishTest extends IQTestHandler {
 		Assert.assertNull(error);
 		Assert.assertEquals(IQ.Type.result, response.getType());
 	}
+	
+	
+	@Test
+	public void testCanNotAddVCardWithNameOfNone() throws Exception {
+		IQ modifiedRequest = request;
+		modifiedRequest.getChildElement()
+		    .element("publish")
+		    .element("item")
+			.attribute("id")
+			.setValue("none");
+
+		vcard.process(request);
+
+		IQ response = (IQ) queue.poll();
+
+		PacketError error = response.getError();
+		Assert.assertNotNull(error);
+		Assert.assertEquals(PacketError.Type.modify, error.getType());
+
+		Assert.assertEquals(PacketError.Condition.bad_request,
+				error.getCondition());
+		Assert.assertEquals(Set.NONE_NOT_ALLOWED,
+				error.getApplicationConditionName());
+	}
 }
