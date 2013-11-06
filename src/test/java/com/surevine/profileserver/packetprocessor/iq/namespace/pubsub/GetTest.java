@@ -10,6 +10,8 @@ import org.dom4j.Element;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.xmpp.forms.DataForm;
+import org.xmpp.forms.FormField;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.Packet;
@@ -31,7 +33,7 @@ public class GetTest extends IQTestHandler {
 	private IQ itemsRequest;
 	private IQ itemRequest;
 	private IQ configureRequest;
-	
+
 	private ArrayList<String> groups;
 
 	@Before
@@ -269,12 +271,12 @@ public class GetTest extends IQTestHandler {
 				((Element) items.elements("item").get(2)).attributeValue("id"));
 
 	}
-	
+
 	@Test
 	public void testNoNodeAttributeOnConfigureReturnsError() throws Exception {
 		IQ modifiedRequest = configureRequest.createCopy();
-		modifiedRequest.getChildElement().element("configure").attribute("node")
-				.detach();
+		modifiedRequest.getChildElement().element("configure")
+				.attribute("node").detach();
 
 		vcard.process(modifiedRequest);
 
@@ -287,12 +289,13 @@ public class GetTest extends IQTestHandler {
 		Assert.assertEquals(PacketError.Condition.bad_request,
 				error.getCondition());
 	}
-	
+
 	@Test
-	public void testEmptyNodeAttributeOnConfigureReturnsError() throws Exception {
+	public void testEmptyNodeAttributeOnConfigureReturnsError()
+			throws Exception {
 		IQ modifiedRequest = configureRequest.createCopy();
-		modifiedRequest.getChildElement().element("configure").attribute("node")
-				.setValue("not-vcard-namespace");
+		modifiedRequest.getChildElement().element("configure")
+				.attribute("node").setValue("not-vcard-namespace");
 
 		vcard.process(modifiedRequest);
 
@@ -305,5 +308,48 @@ public class GetTest extends IQTestHandler {
 		Assert.assertEquals(PacketError.Condition.bad_request,
 				error.getCondition());
 	}
-	
+
+	@Test
+	public void testReturnsExpectedDataFormWithNoVCards() throws Exception {
+
+		Mockito.when(dataStore.getVCardList(Mockito.any(JID.class)))
+				.thenReturn(new ArrayList<VCardMeta>());
+
+		ArrayList<String> groups = new ArrayList<String>();
+		groups.add("family");
+		groups.add("friends");
+		groups.add("colleagues");
+		Mockito.when(dataStore.getOwnerRosterGroupList(Mockito.any(JID.class)))
+				.thenReturn(groups);
+
+		vcard.process(configureRequest);
+
+		IQ response = (IQ) queue.poll();
+System.out.println("\n\n\n" + response.toXML() + "\n\n\n");
+
+		Assert.assertEquals(IQ.Type.result, response.getType());
+
+		Element pubsub = response.getChildElement();
+		Assert.assertEquals(PubSub.NAMESPACE_OWNER, pubsub.getNamespaceURI());
+		Element configure = pubsub.element("configure");
+		Assert.assertEquals(VCard.NAMESPACE_URI,
+				configure.attributeValue("node"));
+		Element x = configure.element("x");
+		Assert.assertEquals(DataForm.NAMESPACE, x.getNamespaceURI());
+
+		Assert.assertEquals(1, x.elements().size());
+
+		Element field = x.element("field");
+		Assert.assertEquals(Get.VCARD_DEFAULT, field.attributeValue("var"));
+		Assert.assertEquals(FormField.Type.list_single.toXMPP(),
+				field.attributeValue("type"));
+		Assert.assertEquals(Get.VCARD_DEFAULT_LABEL,
+				field.attributeValue("label"));
+
+		Assert.assertEquals(1, field.elements("option").size());
+
+		Assert.assertEquals(VCard.NONE, ((Element) field.elements("option").get(0))
+				.elementText("value"));
+	}
+
 }

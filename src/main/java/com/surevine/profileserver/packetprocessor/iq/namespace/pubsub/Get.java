@@ -9,6 +9,8 @@ import java.util.concurrent.BlockingQueue;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.xml.sax.SAXException;
+import org.xmpp.forms.DataForm;
+import org.xmpp.forms.FormField;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.Packet;
@@ -29,6 +31,9 @@ import ezvcard.io.VCardWriter;
 public class Get extends NamespaceProcessorAbstract {
 
 	public static final String MISSING_VCARD_ID = "missing-vcard-id";
+
+	public static final String VCARD_DEFAULT = "default-vcard";
+	public static final String VCARD_DEFAULT_LABEL = "vCard to display to users with no roster group";;
 
 	private Element items = null;
 	private Element pubsub = null;
@@ -71,14 +76,57 @@ public class Get extends NamespaceProcessorAbstract {
 		}
 	}
 
-	private void handleConfiguration() {
+	private void handleConfiguration() throws DataStoreException {
 		Element configure = request.getChildElement().element("configure");
-		if ((null == configure.attributeValue("node")) ||
-				(false == configure.attributeValue("node").equals(VCard.NAMESPACE_URI))) {
+		if ((null == configure.attributeValue("node"))
+				|| (false == configure.attributeValue("node").equals(
+						VCard.NAMESPACE_URI))) {
 			setErrorCondition(PacketError.Type.modify,
 					PacketError.Condition.bad_request);
 			return;
 		}
+		buildConfigurationResponse();
+	}
+
+	private void buildConfigurationResponse() throws DataStoreException {
+
+		List<VCardMeta> vcards = dataStore.getVCardList(request.getFrom());
+		List<String> rosterGroups = dataStore.getOwnerRosterGroupList(request
+				.getFrom());
+
+		Element configure = response.getElement()
+				.addElement("pubsub", PubSub.NAMESPACE_OWNER)
+				.addElement("configure");
+		configure.addAttribute("node", VCard.NAMESPACE_URI);
+
+		DataForm dataForm = new DataForm(DataForm.Type.result);
+		for (VCardMeta vcard : vcards) {
+			addVCardField(dataForm, vcard, rosterGroups);
+		}
+		addDefaultField(dataForm, vcards);
+		configure.add(dataForm.getElement());
+	}
+
+	private void addDefaultField(DataForm dataForm, List<VCardMeta> vcards) {
+		FormField defaultField = dataForm.addField(VCARD_DEFAULT,
+				VCARD_DEFAULT_LABEL, FormField.Type.list_single);
+		defaultField.addOption("None", VCard.NONE);
+		for (VCardMeta vcard : vcards) {
+			defaultField.addOption(vcard.getName(), vcard.getName());
+			if (true == vcard.isDefault())
+				defaultField.addValue(vcard.getName());
+		}
+	}
+
+	private void addVCardField(DataForm dataForm, VCardMeta vcard,
+			List<String> rosterGroups) {
+		FormField field = dataForm.addField("vcard#" + vcard.getName(),
+				"Roster groups which can view vCard '" + vcard.getName() + "'",
+				FormField.Type.list_multi);
+		for (String group : rosterGroups) {
+			field.addOption(group, group);
+		}
+		// Add values
 	}
 
 	private void handleItems() throws DataStoreException {
